@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.shortcuts import render_to_response
-from Number import Number
+from number import Number
 from django.core.context_processors import csrf
 from django.views.decorators.csrf import csrf_protect, ensure_csrf_cookie
 from django.template import Template, loader, RequestContext
