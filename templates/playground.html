@@ -15,7 +15,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
 <script>
-    QIKI_NUMBER_URL = "/qikinumber"
+    var QIKI_NUMBER_URL = "/qikinumber";
 
     $(document).ready(function() {
 
@@ -26,60 +26,60 @@
         $('#negate').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return -x;
-            })
+            });
             floater_changed();
         });
 
         $('#plus_1').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return x + 1.0;
-            })
+            });
             floater_changed();
         });
 
         $('#minus_1').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return x - 1.0;
-            })
+            });
             floater_changed();
         });
 
         $('#mult_2').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return x * 2.0;
-            })
+            });
             floater_changed();
         });
 
         $('#div_2').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return x / 2.0;
-            })
+            });
             floater_changed();
         });
 
         $('#pi').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return 3.14159265358979323846264338327950288419716939937510582;
-            })
+            });
             floater_changed();
         });
 
         $('#euler_e').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return 2.7182818284590452353602874713526624977572470936999595749;
-            })
+            });
             floater_changed();
         });
 
     });
 
     function do_some_math(field_selector, some_math) {
-                                                                                            old_string = $(field_selector).val()
-                                                                     old_float = parseFloat(old_string)
-                                               new_float = some_math(old_float)
-                                  new_string = new_float.toString()
-            $(field_selector).val(new_string)
+        var sOld = $(field_selector).val();
+        var fOld = parseFloat(sOld);
+        var fNew = some_math(fOld);
+        var sNew = fNew.toString();
+        $(field_selector).val(sNew)
     }
     function qstring_changed() {
         qiki_number_server('qstring_to_float', function(response) {
@@ -127,23 +127,7 @@ Type a number:  <input id="floater" size="30" /> <span id="floater_error"></span
 <button id="div_2"   type="button">&divide;2</button>
 <button id="pi"      type="button">&pi;</button>
 <button id="euler_e" type="button"><i>e</i></button>
-{#{% csrf_token %}#}
 
-{# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #}
-{% if aaa %}
-    <table>
-    {% for n in aaa %}
-        <tr>
-            <td>
-                {{ n.qstring }}
-            </td>
-            <td>
-                {{ n.float }}
-            </td>
-        </tr>
-    {% endfor %}
-    </table>
-{% endif %}
 </body>
 </html>
 {# FIXME: number 1e111 bounces between 0qB0_01A9CBC59B83A3D0 and 0qB0_01A9CBC59B83A4 with focus changes. Pi has 3 qstrings. #}
