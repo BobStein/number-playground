@@ -8,5 +8,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^number-playground/', 'playground.views.playground'),
-    url(r'^qikinumber$',        'playground.views.qikinumber'),
+    url(r'^qikinumber$',        'playground.views.qikinumber'),   # ajax
+    url(r'^qiki-playground/',   'playground.views.qiki_playground'),
+    url(r'^qiki-ajax$',         'playground.views.qiki_ajax'),
 )

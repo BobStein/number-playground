@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>qiki playground</title>
+<style>
+    input { font-family: Lucida Console, monospace; }
+    body,td,h1,h2,h3 { font-family: Verdana, sans-serif; }
+    button { font-family: Times New Roman, serif; }
+    #floater_error, #qstring_error { font-size: small; }
+    #qstring {
+        width: 100%;
+    }
+    #floater {
+        width: 100%;
+    }
+</style>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
+<script>
+    var QIKI_AJAX_URL = "/qiki-ajax";
+
+    $(document).ready(function() {
+        qiki_server('qiki_list', function(response){
+            $("#block").text(response.report)
+        })
+    })
+
+    function qiki_server(action, callback) {
+        $.post(QIKI_AJAX_URL, {
+            'action': action,
+            'csrfmiddlewaretoken': $.cookie('csrftoken'),
+        }).done(function(response_body) {
+            response_object = jQuery.parseJSON(response_body);
+            callback(response_object);
+        });
+    }
+
+</script>
+<body>
+<h1>qiki playground</h1>
+
+Ready for a conversation...
+<pre id="block"></pre>
+
+<div id="qikilist"></div>
+</body>
+</html>
