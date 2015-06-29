@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'social.apps.django_app.default',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,3 +86,28 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
+
+
+# python-social-auth
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.open_id.OpenIdAuth',
+    # 'social.backends.google.GoogleOpenId',
+    # 'social.backends.google.GoogleOAuth2',
+    # 'social.backends.google.GoogleOAuth',
+    # 'social.backends.twitter.TwitterOAuth',
+    'social.backends.yahoo.YahooOpenId',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'social.apps.django_app.context_processors.backends',
+    'social.apps.django_app.context_processors.login_redirect',
+)
+
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
+
+# LOGIN_REDIRECT_URL = '/members'

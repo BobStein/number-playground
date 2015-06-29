@@ -4,15 +4,15 @@ from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse
 from django import forms
-
+from django.contrib.auth.decorators import login_required
 import os
 from number import Number
 from word import Word, System
 
 
 @ensure_csrf_cookie
-def playground(request):
-    return render(request, 'playground.html')
+def number_playground(request):
+    return render(request, 'number-playground.html')
 
     # return render_to_response('playground.html', {}, context_instance=RequestContext(request))
 
@@ -69,9 +69,19 @@ def qikinumber(request):
     else:
         return HttpResponse('Oops, this is a POST-only URL.')
 
-
+@login_required
 def qiki_playground(request):
-    return render(request, 'qiki-playground.html')
+    if request.user.is_anonymous():
+        return "Log in"
+    else:
+        return render(
+            request,
+            'qiki-playground.html',
+            {
+                'name': request.user.username,
+                'email': request.user.email
+            }
+        )
 
 
 def qiki_ajax(request):
