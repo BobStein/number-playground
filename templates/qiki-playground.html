@@ -16,12 +16,13 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
 <script>
-    var QIKI_AJAX_URL = "/qiki-ajax";
+    var QIKI_AJAX_URL = "{{ QIKI_AJAX_URL }}";
 
     $(document).ready(function() {
+        $('#csrftoken').val($.cookie('csrftoken'));
         qiki_server('qiki_list', function(response){
-            $("#block").text(response.report)
-        })
+            $("#block").text(response.report);
+        });
     })
 
     function qiki_server(action, callback) {
@@ -42,5 +43,11 @@ Ready for a conversation with you {{ name }}, {{ email }} ...
 <pre id="block"></pre>
 
 <div id="qikilist"></div>
+<form action="{{ QIKI_AJAX_URL }}" method="post">
+    <input type="hidden" name="action" value="comment">
+    <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="tbd...">
+    <input name="comment" />
+    <input type="submit" />
+</form>
 </body>
 </html>

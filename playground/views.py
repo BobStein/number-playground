@@ -1,18 +1,20 @@
 import json
 
-from django.shortcuts import render
+import django.shortcuts
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django import forms
 from django.contrib.auth.decorators import login_required
 import os
 from number import Number
 from word import Word, System
 
+QIKI_AJAX_URL = "/qiki-ajax"
+
 
 @ensure_csrf_cookie
 def number_playground(request):
-    return render(request, 'number-playground.html')
+    return django.shortcuts.render(request, 'number-playground.html')
 
     # return render_to_response('playground.html', {}, context_instance=RequestContext(request))
 
@@ -74,42 +76,52 @@ def qiki_playground(request):
     if request.user.is_anonymous():
         return "Log in"
     else:
-        return render(
+        return django.shortcuts.render(
             request,
             'qiki-playground.html',
             {
                 'name': request.user.username,
-                'email': request.user.email
+                'email': request.user.email,
+                'QIKI_AJAX_URL': QIKI_AJAX_URL,
             }
         )
 
+def get_system():
+    system = System(
+        language=os.environ['DATABASE_LANGUAGE'],
+        host=    os.environ['DATABASE_HOST'],
+        port=    os.environ['DATABASE_PORT'],
+        user=    os.environ['DATABASE_USER'],
+        password=os.environ['DATABASE_PASSWORD'],
+        database=os.environ['DATABASE_DATABASE'],
+        table=   os.environ['DATABASE_TABLE'],
+    )
+    return system
+
+class QikiPlaygroundForm(forms.Form):
+    action  = forms.CharField(required=True)
+    comment = forms.CharField(required=False)
 
 def qiki_ajax(request):
     if request.method == 'POST':
-        form = Playform(request.POST)
+        form = QikiPlaygroundForm(request.POST)
         if form.is_valid():
             action = form.cleaned_data['action']
             if action == 'qiki_list':
-                system = System(
-                    language=os.environ['DATABASE_LANGUAGE'],
-                    host=    os.environ['DATABASE_HOST'],
-                    port=    os.environ['DATABASE_PORT'],
-                    user=    os.environ['DATABASE_USER'],
-                    password=os.environ['DATABASE_PASSWORD'],
-                    database=os.environ['DATABASE_DATABASE'],
-                    table=   os.environ['DATABASE_TABLE'],
-                )
+                system = get_system()
                 ids = system.get_all_ids()
                 report=""
                 for _id in ids:
                     report += str(int(_id)) + " " + system(_id).description()
                     report += "\n"
                 return valid_response('report', report)
+            elif action == 'comment':
+                system = get_system()
+                comment = system.verb('comment')
+                system.comment(system, 1, form.cleaned_data['comment'])
+                return django.shortcuts.redirect('/qiki-playground/')
             else:
-                r = HttpResponse()
-                r.status_code = 404
-                r.reason_phrase = "Action '%s' not supported" % action
-                return r
+                return HttpResponseNotFound("Action '%s' is not supported" % action)
         else:
             return HttpResponse('whoa %s' % repr(form.errors))
     else:
