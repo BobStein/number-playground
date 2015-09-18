@@ -10,7 +10,10 @@ urlpatterns = patterns('',
     url(r'^qikinumber$',        'playground.views.qikinumber'),   # ajax
     url(r'^qiki-playground/',   'playground.views.qiki_playground'),
     url(r'^qiki-ajax$',         'playground.views.qiki_ajax'),
-    url(r'^accounts/login/$', auth_views.login, name='login'),
-    url(r'^accounts/logout/$', auth_views.logout),
-    url('', include('social.apps.django_app.urls', namespace='social')),
+
+    # url(r'^accounts/login/$', auth_views.login, name='login'),
+    # url(r'^accounts/logout/$', auth_views.logout),
+    # url('', include('social.apps.django_app.urls', namespace='social')),
+
+    url(r'^accounts/', include('allauth.urls')),
 )

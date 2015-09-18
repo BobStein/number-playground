@@ -39,7 +39,30 @@
 <body>
 <h1>qiki playground</h1>
 
-Ready for a conversation with you {{ name }}, {{ email }} ...
+<p>
+    Ready for a conversation with you {{ name }}, {{ email }} ...
+</p>
+
+<p>
+    {% load account %}
+
+    {% user_display user %}
+
+    <a href="/accounts/logout/" class="pull-right">Logout</a>
+    {# The following don't work very well. #}
+    {#    {% load socialaccount %}#}
+    {##}
+    {#    <a href="{% provider_login_url "google" openid="https://www.google.com/accounts/o8/id" next="/success/url/" %}">Google</a>#}
+    {#    <a href="{% provider_login_url "facebook" %}">Facebook</a>#}
+</p>
+
+<p>
+    [
+    {% for s in django_site %}
+    - {{ s.id }} - {{ s.domain }} -
+    {% endfor %}
+    ]
+</p>
 <pre id="block"></pre>
 
 <div id="qikilist"></div>
