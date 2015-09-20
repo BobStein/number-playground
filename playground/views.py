@@ -6,8 +6,8 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django import forms
 from django.contrib.auth.decorators import login_required
 import os
-from number import Number
-from word import Word, System
+from qiki import Number
+from qiki import Word, System
 
 QIKI_AJAX_URL = "/qiki-ajax"
 
