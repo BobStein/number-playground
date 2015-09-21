@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 cd /home/visibone/qiki/number-playground
 git pull origin rnsdev
 
