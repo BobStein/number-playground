@@ -59,6 +59,13 @@
             floater_changed();
         });
 
+        $('#zero').click(function(evt) {
+            do_some_math('#floater', function(x) {
+                return 0;
+            });
+            floater_changed();
+        });
+
         $('#pi').click(function(evt) {
             do_some_math('#floater', function(x) {
                 return 3.14159265358979323846264338327950288419716939937510582;
@@ -126,10 +133,11 @@ Type a number:  <input id="floater" size="30" /> <span id="floater_error"></span
 <button id="minus_1" type="button">&minus;1</button>
 <button id="mult_2"  type="button">&times;2</button>
 <button id="div_2"   type="button">&divide;2</button>
+<button id="zero"    type="button">0</button>
 <button id="pi"      type="button">&pi;</button>
 <button id="euler_e" type="button"><i>e</i></button>
 
 </body>
 </html>
 {# FIXME: number 1e111 bounces between 0qB0_01A9CBC59B83A3D0 and 0qB0_01A9CBC59B83A4 with focus changes. Pi has 3 qstrings. #}
-{# TODO: support big integers, e.g. googol+1 #}
+{# TODO: support big integers, e.g. googol+1.  Use a different field? #}
