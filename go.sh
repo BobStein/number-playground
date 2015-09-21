@@ -1,9 +1,9 @@
 #!/bin/bash
 
-cd /home/visibone/qiki/number-playground
+cd /home/visibone/qiki/qiki-python
 git pull origin rnsdev
 
-cd /home/visibone/qiki/qiki-python
+cd /home/visibone/qiki/number-playground
 git pull origin rnsdev
 
 export PYTHONPATH=/home/visibone/qiki/number-playground:/home/visibone/qiki/qiki-python
