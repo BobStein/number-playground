@@ -20,11 +20,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '^v*1^6b$^!rpv_=lseywc%w6vz31@&x6@s4ic)_k)(n&ebx1ux'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'qiki.info',
+    'localhost',
+    '64.239.60.215',
+    '127.0.0.1',
+]
 
 
 # Application definition
@@ -167,3 +172,34 @@ SOCIALACCOUNT_PROVIDERS = {
         }
     },
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/home/visibone/qiki/django.log',
+        },
+        'applogfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': '/home/visibone/qiki/playground.log',
+            'maxBytes': 1024*1024*15, # 15MB
+            'backupCount': 10,
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'number_playground': {
+            'handlers': ['applogfile',],
+            'level': 'DEBUG',
+        },
+    },
+}
+

@@ -7,11 +7,13 @@ from django import forms
 from django.contrib.auth.decorators import login_required
 import os
 import sys
+import logging
+logger = logging.getLogger(__name__)
 
 import qiki
 try:
     import secure.credentials
-except ImportError:
+except ImportError as import_error:
     secure = None
     print("""
         Example secure/credentials.py
@@ -28,6 +30,7 @@ except ImportError:
 
         You also need an empty secure/__init__.py
     """)
+    logger.exception(import_error)
     sys.exit(1)
 
 QIKI_AJAX_URL = "/qiki-ajax"
