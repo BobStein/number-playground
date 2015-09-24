@@ -6,8 +6,29 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django import forms
 from django.contrib.auth.decorators import login_required
 import os
-from qiki import Number
-from qiki import Word, System
+import sys
+
+import qiki
+try:
+    import secure.credentials
+except ImportError:
+    secure = None
+    print("""
+        Example secure/credentials.py
+
+            for_playground_database = dict(
+                language= 'MySQL',
+                host=     'localhost',
+                port=     8000,
+                user=     'user',
+                password= 'password',
+                database= 'database',
+                table=    'word',
+            )
+
+        You also need an empty secure/__init__.py
+    """)
+    sys.exit(1)
 
 QIKI_AJAX_URL = "/qiki-ajax"
 
@@ -18,7 +39,7 @@ def number_playground(request):
 
     # return render_to_response('playground.html', {}, context_instance=RequestContext(request))
 
-    # return render_to_response('playground.html')  #, {'aaa': ({'qstring':str(Number(x/256.0)), 'float':x/256.0} for x in range(-65536-256*10,65536+256*10+1))})
+    # return render_to_response('playground.html')  #, {'aaa': ({'qstring':str(qiki.Number(x/256.0)), 'float':x/256.0} for x in range(-65536-256*10,65536+256*10+1))})
 
     # t = loader.get_template('playground.html')
     # c = RequestContext(request)
@@ -38,7 +59,7 @@ def qikinumber(request):
             action = form.cleaned_data['action']
             if action == 'qstring_to_float':
                 try:
-                    number_from_qstring = Number(form.cleaned_data['qstring'])
+                    number_from_qstring = qiki.Number(form.cleaned_data['qstring'])
                     floater = str(float(number_from_qstring))
                 except Exception as e:
                     return invalid_response(str(e))
@@ -53,13 +74,13 @@ def qikinumber(request):
                         integer_typed = int(form.cleaned_data['floater'], 0)
                     except Exception as e:
                         int_error = str(e)
-                        # TODO: support q-string by trying Number(floater) ?
+                        # TODO: support q-string by trying qiki.Number(floater) ?
                         return invalid_response("Either %s, or %s" % (float_error, int_error))
                     else:
-                        qstring = Number(integer_typed).qstring()
+                        qstring = qiki.Number(integer_typed).qstring()
                         return valid_response('qstring', qstring)
                 else:
-                    qstring = Number(floating_point_typed, qigits=7).qstring()
+                    qstring = qiki.Number(floating_point_typed, qigits=7).qstring()
                     return valid_response('qstring', qstring)
             else:
                 r = HttpResponse()
@@ -87,15 +108,7 @@ def qiki_playground(request):
         )
 
 def get_system():
-    system = System(
-        language=os.environ['DATABASE_LANGUAGE'],
-        host=    os.environ['DATABASE_HOST'],
-        port=    os.environ['DATABASE_PORT'],
-        user=    os.environ['DATABASE_USER'],
-        password=os.environ['DATABASE_PASSWORD'],
-        database=os.environ['DATABASE_DATABASE'],
-        table=   os.environ['DATABASE_TABLE'],
-    )
+    system = qiki.System(**secure.credentials.for_playground_database)
     return system
 
 class QikiPlaygroundForm(forms.Form):
