@@ -20,8 +20,10 @@
 
     $(document).ready(function() {
         $('#csrftoken').val($.cookie('csrftoken'));
+        $('#loading').text("Loading words...")
         qiki_server('qiki_list', function(response){
             $("#block").text(response.report);
+            $('#loading').text("")
         });
     })
 
@@ -56,13 +58,8 @@
     {#    <a href="{% provider_login_url "facebook" %}">Facebook</a>#}
 </p>
 
-<p>
-    [
-    {% for s in django_site %}
-    - {{ s.id }} - {{ s.domain }} -
-    {% endfor %}
-    ]
-</p>
+<p id="loading"></p>
+
 <pre id="block"></pre>
 
 <div id="qikilist"></div>
