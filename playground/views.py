@@ -1,14 +1,15 @@
 import json
+import datetime
 
 import django.shortcuts
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, HttpResponseNotFound
 from django import forms
 from django.contrib.auth.decorators import login_required
-import os
 import sys
 import logging
 logger = logging.getLogger(__name__)
+logger.info("".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S")))   # FIXME:  effing django
 
 import qiki
 try:
