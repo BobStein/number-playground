@@ -162,7 +162,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = '/accounts/login/'
 SOCIALACCOUNT_QUERY_EMAIL = True
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
-        'SCOPE': ['email', 'publish_stream'],
+        'SCOPE': ['email', 'publish_actions'],
         'METHOD': 'js_sdk'  # instead of 'oauth2'
     },
     'google': {
