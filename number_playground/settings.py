@@ -89,9 +89,17 @@ USE_L10N = True
 
 USE_TZ = True
 
-SITE_ID = 5
+
+
 # thanks http://stackoverflow.com/questions/29871973/error-migrating-comment-framework-into-django#answer-29872491
 # thanks https://docs.djangoproject.com/en/1.8/ref/contrib/sites/#django.contrib.sites.models.Site
+if os.name == 'posix':
+    SITE_ID = 5
+elif os.name == 'nt':
+    SITE_ID = 3
+else:
+    assert False, "OS unrecognized '{}'".format(os.name)
+
 
 
 # Static files (CSS, JavaScript, Images)
