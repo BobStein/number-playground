@@ -22,7 +22,7 @@ SECRET_KEY = '^v*1^6b$^!rpv_=lseywc%w6vz31@&x6@s4ic)_k)(n&ebx1ux'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+# TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = [
     'qiki.info',
@@ -81,7 +81,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -158,6 +158,7 @@ TEMPLATES = [
                 # 'django.core.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
             ],
+            'debug': True,
         },
     },
 ]
