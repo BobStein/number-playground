@@ -42,7 +42,7 @@
 <h1>qiki playground</h1>
 
 <p>
-    Ready for a conversation with you {{ name }}, {{ email }} ...
+    Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }} ...
 </p>
 
 <p>
@@ -50,6 +50,7 @@
 
     {% user_display user %}
 
+    {# TODO: "/accounts/logout/" -- D.R.Y. with django.core.urlresolvers.reverse('accounts:') ... #}
     <a href="/accounts/logout/" class="pull-right">Logout</a>
     {# The following don't work very well. #}
     {#    {% load socialaccount %}#}

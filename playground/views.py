@@ -105,8 +105,9 @@ def qiki_playground(request):
             request,
             'qiki-playground.html',
             {
-                'name': request.user.username,
-                'email': request.user.email,
+                'user_id': request.user.id,
+                'user_name': request.user.username,
+                'user_email': request.user.email,
                 'QIKI_AJAX_URL': QIKI_AJAX_URL,
             }
         )
