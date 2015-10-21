@@ -120,30 +120,38 @@ class QikiPlaygroundForm(forms.Form):
     action  = forms.CharField(required=True)
     comment = forms.CharField(required=False)
 
+class DjangoUser(qiki.Word):
+    def _from_id(self, user_id):
+        pass
+
+
 def qiki_ajax(request):
-    if request.method == 'POST':
-        form = QikiPlaygroundForm(request.POST)
-        if form.is_valid():
-            action = form.cleaned_data['action']
-            if action == 'qiki_list':
-                system = get_system()
-                ids = system.get_all_ids()
-                report=""
-                for _id in ids:
-                    report += str(int(_id)) + " " + system(_id).description()
-                    report += "\n"
-                return valid_response('report', report)
-            elif action == 'comment':
-                system = get_system()
-                comment = system.verb('comment')
-                system.comment(system, 1, form.cleaned_data['comment'])
-                return django.shortcuts.redirect('/qiki-playground/')
-            else:
-                return HttpResponseNotFound("Action '%s' is not supported" % action)
-        else:
-            return HttpResponse('whoa %s' % repr(form.errors))
+    if request.user.is_anonymous():
+        return HttpResponse("Log in")
     else:
-        return HttpResponse('Oops, this is a POST-only URL.')
+        if request.method == 'POST':
+            form = QikiPlaygroundForm(request.POST)
+            if form.is_valid():
+                action = form.cleaned_data['action']
+                if action == 'qiki_list':
+                    system = get_system()
+                    ids = system.get_all_ids()
+                    report=""
+                    for _id in ids:
+                        report += str(int(_id)) + " " + system(_id).description()
+                        report += "\n"
+                    return valid_response('report', report)
+                elif action == 'comment':
+                    system = get_system()
+                    # comment = system.verb('comment')
+                    system.comment(system, 1, form.cleaned_data['comment'])
+                    return django.shortcuts.redirect('/qiki-playground/')
+                else:
+                    return HttpResponseNotFound("Action '%s' is not supported" % action)
+            else:
+                return HttpResponse('whoa %s' % repr(form.errors))
+        else:
+            return HttpResponse('Oops, this is a POST-only URL.')
 
 
 def valid_response(name, value):
