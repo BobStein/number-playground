@@ -105,7 +105,7 @@ def qiki_playground(request):
             request,
             'qiki-playground.html',
             {
-                'user_id': request.user.id,
+                'useridn': request.user.id,
                 'user_name': request.user.username,
                 'user_email': request.user.email,
                 'QIKI_AJAX_URL': QIKI_AJAX_URL,
@@ -120,11 +120,6 @@ class QikiPlaygroundForm(forms.Form):
     action  = forms.CharField(required=True)
     comment = forms.CharField(required=False)
 
-class DjangoUser(qiki.Word):
-    def _from_id(self, user_id):
-        pass
-
-
 def qiki_ajax(request):
     if request.user.is_anonymous():
         return HttpResponse("Log in")
@@ -135,10 +130,10 @@ def qiki_ajax(request):
                 action = form.cleaned_data['action']
                 if action == 'qiki_list':
                     system = get_system()
-                    ids = system.get_all_ids()
+                    idns = system.get_all_idns()
                     report=""
-                    for _id in ids:
-                        report += str(int(_id)) + " " + system(_id).description()
+                    for idn in idns:
+                        report += str(int(idn)) + " " + system(idn).description()
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'comment':
