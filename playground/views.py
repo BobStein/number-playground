@@ -2,6 +2,7 @@ import json
 import datetime
 
 import django.shortcuts
+from django.contrib.auth.models import User
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.http import HttpResponse, HttpResponseNotFound
 from django import forms
@@ -120,6 +121,17 @@ class QikiPlaygroundForm(forms.Form):
     action  = forms.CharField(required=True)
     comment = forms.CharField(required=False)
 
+class DjangoUser(qiki.Listing):
+    def lookup(self, index, callback):
+        try:
+            user_name = User.objects.get(id=int(index)).username
+            # THANKS: http://stackoverflow.com/a/2568955/673991
+        except User.DoesNotExist:
+            raise self.NotFound
+        callback(user_name, qiki.Number(1))
+
+
+@login_required
 def qiki_ajax(request):
     if request.user.is_anonymous():
         return HttpResponse("Log in")
