@@ -106,20 +106,13 @@ def qiki_playground(request):
             request,
             'qiki-playground.html',
             {
-                'useridn': request.user.id,
+                'user_id': request.user.id,
                 'user_name': request.user.username,
                 'user_email': request.user.email,
                 'QIKI_AJAX_URL': QIKI_AJAX_URL,
             }
         )
 
-def get_system():
-    system = qiki.System(**secure.credentials.for_playground_database)
-    return system
-
-class QikiPlaygroundForm(forms.Form):
-    action  = forms.CharField(required=True)
-    comment = forms.CharField(required=False)
 
 class DjangoUser(qiki.Listing):
     def lookup(self, index, callback):
@@ -129,6 +122,21 @@ class DjangoUser(qiki.Listing):
         except User.DoesNotExist:
             raise self.NotFound
         callback(user_name, qiki.Number(1))
+
+
+def get_system():
+    system = qiki.SystemMySQL(**secure.credentials.for_playground_database)
+    listing = system.noun('listing')
+    qiki.Listing.install(listing.idn)
+    django_user = listing('django_user')
+    DjangoUser.install(django_user.idn)
+    # raise Exception
+    return system
+
+
+class QikiPlaygroundForm(forms.Form):
+    action  = forms.CharField(required=True)
+    comment = forms.CharField(required=False)
 
 
 @login_required
@@ -149,9 +157,20 @@ def qiki_ajax(request):
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'comment':
+                    comment_text = form.cleaned_data['comment']
                     system = get_system()
-                    # comment = system.verb('comment')
-                    system.comment(system, 1, form.cleaned_data['comment'])
+                    comment = system.verb('comment')   # Is this needed?
+                    me = DjangoUser(qiki.Number(request.user.id))
+                    # me.comment(system, 1, comment_text)
+                    # TODO:  Would this work if there were a me.system?
+                    comment_word = system.spawn(
+                        sbj=me.idn,
+                        vrb=comment.idn,
+                        obj=system.idn,
+                        txt=comment_text,
+                        num=qiki.Number(1),
+                    )
+                    comment_word.save()
                     return django.shortcuts.redirect('/qiki-playground/')
                 else:
                     return HttpResponseNotFound("Action '%s' is not supported" % action)

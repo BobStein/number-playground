@@ -5,12 +5,17 @@
     input { font-family: Lucida Console, monospace; }
     body,td,h1,h2,h3 { font-family: Verdana, sans-serif; }
     button { font-family: Times New Roman, serif; }
-    #floater_error, #qstring_error { font-size: small; }
-    #qstring {
-        width: 100%;
-    }
-    #floater {
-        width: 100%;
+{#    #floater_error, #qstring_error { #}
+{#        font-size: small; #}
+{#    }#}
+{#    #qstring {#}
+{#        width: 100%;#}
+{#    }#}
+{#    #floater {#}
+{#        width: 100%;#}
+{#    }#}
+    #error_message {
+        background-color: rgb(255,204,204);
     }
 </style>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -20,20 +25,31 @@
 
     $(document).ready(function() {
         $('#csrftoken').val($.cookie('csrftoken'));
-        $('#loading').text("Loading words...")
-        qiki_server('qiki_list', function(response){
-            $("#block").text(response.report);
-            $('#loading').text("")
-        });
+        $('#loading').text("Loading words...");
+        qiki_server(
+            'qiki_list',
+            function(response) {
+                $('#loading_progress').text("");
+                $("#report_block").text(response.report);
+                $('#error_message').text("");
+            },
+            function(error_message) {
+                $('#loading_progress').text("");
+                $('#report_block').text("");
+                $("#error_message").text(error_message);
+            }
+        );
     })
 
-    function qiki_server(action, callback) {
+    function qiki_server(action, callback_done, callback_fail) {
         $.post(QIKI_AJAX_URL, {
             'action': action,
             'csrfmiddlewaretoken': $.cookie('csrftoken'),
         }).done(function(response_body) {
             response_object = jQuery.parseJSON(response_body);
-            callback(response_object);
+            callback_done(response_object);
+        }).fail(function(jqXHR) {
+            callback_fail(jqXHR.responseText);
         });
     }
 
@@ -42,7 +58,7 @@
 <h1>qiki playground</h1>
 
 <p>
-    Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }} ...
+    Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }}.
 </p>
 
 <p>
@@ -59,9 +75,9 @@
     {#    <a href="{% provider_login_url "facebook" %}">Facebook</a>#}
 </p>
 
-<p id="loading"></p>
-
-<pre id="block"></pre>
+<p id="loading_progress"></p>
+<pre id="report_block"></pre>
+<pre id="error_message"></pre>
 
 <div id="qikilist"></div>
 <form action="{{ QIKI_AJAX_URL }}" method="post">
