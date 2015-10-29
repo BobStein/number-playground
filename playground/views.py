@@ -127,9 +127,9 @@ class DjangoUser(qiki.Listing):
 def get_system():
     system = qiki.SystemMySQL(**secure.credentials.for_playground_database)
     listing = system.noun('listing')
-    qiki.Listing.install(listing.idn)
+    qiki.Listing.install(listing)
     django_user = listing('django_user')
-    DjangoUser.install(django_user.idn)
+    DjangoUser.install(django_user)
     # raise Exception
     return system
 
@@ -161,16 +161,17 @@ def qiki_ajax(request):
                     system = get_system()
                     comment = system.verb('comment')   # Is this needed?
                     me = DjangoUser(qiki.Number(request.user.id))
-                    # me.comment(system, 1, comment_text)
-                    # TODO:  Would this work if there were a me.system?
-                    comment_word = system.spawn(
-                        sbj=me.idn,
-                        vrb=comment.idn,
-                        obj=system.idn,
-                        txt=comment_text,
-                        num=qiki.Number(1),
-                    )
-                    comment_word.save()
+                    me.comment(system, comment_text, qiki.Number(1))
+                    # # me.comment(system, 1, comment_text)
+                    # # TODO:  Would this work if there were a me.system?
+                    # comment_word = system.spawn(
+                    #     sbj=me.idn,
+                    #     vrb=comment.idn,
+                    #     obj=system.idn,
+                    #     txt=comment_text,
+                    #     num=qiki.Number(1),
+                    # )
+                    # comment_word.save()
                     return django.shortcuts.redirect('/qiki-playground/')
                 else:
                     return HttpResponseNotFound("Action '%s' is not supported" % action)
