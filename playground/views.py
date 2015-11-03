@@ -124,14 +124,14 @@ class DjangoUser(qiki.Listing):
         callback(user_name, qiki.Number(1))
 
 
-def get_system():
-    system = qiki.SystemMySQL(**secure.credentials.for_playground_database)
-    listing = system.noun('listing')
+def get_lex():
+    lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
+    listing = lex.noun('listing')
     qiki.Listing.install(listing)
     django_user = listing('django_user')
     DjangoUser.install(django_user)
     # raise Exception
-    return system
+    return lex
 
 
 class QikiPlaygroundForm(forms.Form):
@@ -149,25 +149,25 @@ def qiki_ajax(request):
             if form.is_valid():
                 action = form.cleaned_data['action']
                 if action == 'qiki_list':
-                    system = get_system()
-                    idns = system.get_all_idns()
+                    lex = get_lex()
+                    idns = lex.get_all_idns()
                     report=""
                     for idn in idns:
-                        report += str(int(idn)) + " " + system(idn).description()
+                        report += str(int(idn)) + " " + lex(idn).description()
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
-                    system = get_system()
-                    comment = system.verb('comment')   # Is this needed?
+                    lex = get_lex()
                     me = DjangoUser(qiki.Number(request.user.id))
-                    me.comment(system, comment_text, qiki.Number(1))
-                    # # me.comment(system, 1, comment_text)
-                    # # TODO:  Would this work if there were a me.system?
-                    # comment_word = system.spawn(
+                    lex.verb('comment')
+                    me.comment(lex, qiki.Number(1), comment_text)
+                    # # me.comment(lex, 1, comment_text)
+                    # # TODO:  Would this work if there were a me.lex?
+                    # comment_word = lex.spawn(
                     #     sbj=me.idn,
                     #     vrb=comment.idn,
-                    #     obj=system.idn,
+                    #     obj=lex.idn,
                     #     txt=comment_text,
                     #     num=qiki.Number(1),
                     # )
