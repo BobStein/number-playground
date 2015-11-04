@@ -1,16 +1,18 @@
-import json
 import datetime
-
-import django.shortcuts
-from django.contrib.auth.models import User
-from django.views.decorators.csrf import ensure_csrf_cookie
-from django.http import HttpResponse, HttpResponseNotFound
-from django import forms
-from django.contrib.auth.decorators import login_required
+import json
 import sys
+
+from django import forms
+from django import template
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseNotFound
+import django.shortcuts
+from django.views.decorators.csrf import ensure_csrf_cookie
 import logging
 logger = logging.getLogger(__name__)
-logger.info("".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S")))   # FIXME:  effing django
+logger.info("{now}".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S")))
+# FIXME:  Timestamp in the log.  (effing django)
 
 import qiki
 try:
@@ -35,7 +37,9 @@ except ImportError as import_error:
     logger.exception(import_error)
     sys.exit(1)
 
+
 QIKI_AJAX_URL = "/qiki-ajax"
+register = template.Library()
 
 
 @ensure_csrf_cookie
@@ -97,11 +101,31 @@ def qikinumber(request):
     else:
         return HttpResponse('Oops, this is a POST-only URL.')
 
+
+@register.inclusion_tag('word-diagram-call.html')
+def word_diagram(word):
+    sbj = word.spawn(word.sbj)
+    vrb = word.spawn(word.vrb)
+    obj = word.spawn(word.obj)
+    return dict(
+        sbj=sbj.txt,
+        vrb=vrb.txt,
+        obj=obj.txt,
+        txt=word.txt,
+        num=float(word.num),
+    )
+
+
 @login_required
 def qiki_playground(request):
     if request.user.is_anonymous():
         return "Log in"
     else:
+        lex = get_lex()
+        idns = lex.get_all_idns()
+        words = []
+        for idn in idns:
+            words.append(lex(idn))
         return django.shortcuts.render(
             request,
             'qiki-playground.html',
@@ -110,6 +134,7 @@ def qiki_playground(request):
                 'user_name': request.user.username,
                 'user_email': request.user.email,
                 'QIKI_AJAX_URL': QIKI_AJAX_URL,
+                'words': words,
             }
         )
 
@@ -134,6 +159,19 @@ def get_lex():
     return lex
 
 
+def build_qoolbar():
+    lex = get_lex()
+    verb = lex('verb')
+    qool = verb('qool')
+    verb('iconify')
+    # like = qool('like')
+    like = lex.define(qool, 'like')
+    lex.iconify(like, qiki.Number(1), 'http://tool.qiki.info/icon/thumbsup_16.png')
+    delete = lex.define(qool, 'delete')
+    lex.iconify(delete, qiki.Number(1), 'http://tool.qiki.info/icon/delete_16.png')
+build_qoolbar()
+
+
 class QikiPlaygroundForm(forms.Form):
     action  = forms.CharField(required=True)
     comment = forms.CharField(required=False)
@@ -153,8 +191,19 @@ def qiki_ajax(request):
                     idns = lex.get_all_idns()
                     report=""
                     for idn in idns:
-                        report += str(int(idn)) + " " + lex(idn).description()
+                        word = lex(idn)
+                        report += str(int(idn)) + " " + word.description()
                         report += "\n"
+                    return valid_response('report', report)
+                if action == 'qoolbar_list':
+                    lex = get_lex()
+                    qool = lex('qool')
+                    iconify = lex('iconify')
+                    thingies = lex.find_obj_by_vrb(qool, iconify)
+                    report = ""
+                    for thingie in thingies:
+                        # report += thingie[0] + " - " + thingie[1] + "<br>\n"
+                        report += str(int(thingie.idn)) + " - " + thingie.txt + "<br>\n"
                     return valid_response('report', report)
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']

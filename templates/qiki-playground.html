@@ -17,6 +17,12 @@
     #error_message {
         background-color: rgb(255,204,204);
     }
+    .noun-txt {
+        color: rgb(50,100,150);
+    }
+    .verb-txt {
+        color: rgb(150,50,50);
+    }
 </style>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
@@ -31,15 +37,29 @@
             function(response) {
                 $('#loading_progress').text("");
                 $("#report_block").text(response.report);
-                $('#error_message').text("");
             },
             function(error_message) {
                 $('#loading_progress').text("");
                 $('#report_block').text("");
-                $("#error_message").text(error_message);
+                show_error_message(error_message);
+            }
+        );
+        $('#qoolbar').text("Loading qoolbar...");
+        qiki_server(
+            'qoolbar_list',
+            function(response) {
+                $("#qoolbar").text(response.report);
+            },
+            function(error_message) {
+                $('#qoolbar').text("");
+                show_error_message(error_message);
             }
         );
     })
+
+    function show_error_message(message) {
+        $("#error_message").append(document.createTextNode(message));
+    }
 
     function qiki_server(action, callback_done, callback_fail) {
         $.post(QIKI_AJAX_URL, {
@@ -86,5 +106,16 @@
     <input name="comment" />
     <input type="submit" />
 </form>
+
+<ul>
+{% for word in words %}
+    <li>{% word_diagram word  %}</li>
+{% endfor %}
+</ul>
+
+<div id="qoolbar"></div>
+
+
 </body>
 </html>
+
