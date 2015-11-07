@@ -107,6 +107,9 @@
     <input type="submit" />
 </form>
 
+{% load playground_extras %}
+{% show_results  %}
+
 <ul>
 {% for word in words %}
     <li>{% word_diagram word  %}</li>

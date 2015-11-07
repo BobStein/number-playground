@@ -3,7 +3,6 @@ import json
 import sys
 
 from django import forms
-from django import template
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseNotFound
@@ -39,7 +38,6 @@ except ImportError as import_error:
 
 
 QIKI_AJAX_URL = "/qiki-ajax"
-register = template.Library()
 
 
 @ensure_csrf_cookie
@@ -102,20 +100,6 @@ def qikinumber(request):
         return HttpResponse('Oops, this is a POST-only URL.')
 
 
-@register.inclusion_tag('word-diagram-call.html')
-def word_diagram(word):
-    sbj = word.spawn(word.sbj)
-    vrb = word.spawn(word.vrb)
-    obj = word.spawn(word.obj)
-    return dict(
-        sbj=sbj.txt,
-        vrb=vrb.txt,
-        obj=obj.txt,
-        txt=word.txt,
-        num=float(word.num),
-    )
-
-
 @login_required
 def qiki_playground(request):
     if request.user.is_anonymous():
@@ -125,7 +109,10 @@ def qiki_playground(request):
         idns = lex.get_all_idns()
         words = []
         for idn in idns:
-            words.append(lex(idn))
+            word = lex(idn)
+            word.do_not_call_in_templates = True
+            word.moo = 'loo'
+            words.append(word)
         return django.shortcuts.render(
             request,
             'qiki-playground.html',
@@ -166,9 +153,9 @@ def build_qoolbar():
     verb('iconify')
     # like = qool('like')
     like = lex.define(qool, 'like')
-    lex.iconify(like, qiki.Number(1), 'http://tool.qiki.info/icon/thumbsup_16.png')
+    lex.iconify(like, qiki.Number(1), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
     delete = lex.define(qool, 'delete')
-    lex.iconify(delete, qiki.Number(1), 'http://tool.qiki.info/icon/delete_16.png')
+    lex.iconify(delete, qiki.Number(1), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
 build_qoolbar()
 
 
