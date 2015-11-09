@@ -11,7 +11,7 @@ def word_diagram(word, show_idn=False):
     sbj = word.spawn(word.sbj)
     vrb = word.spawn(word.vrb)
     obj = word.spawn(word.obj)
-    if word.is_definition():
+    if word.is_defined():
         if word.is_a_verb():
             is_a_what = "verb"
         elif word.is_a_noun():
@@ -21,7 +21,7 @@ def word_diagram(word, show_idn=False):
     else:
         is_a_what = "else"
     datetime_object = datetime.datetime.fromtimestamp(float(word.whn))
-    time_code = datetime_object.strftime("%Y.%m%d.%H%M.%S.%f")
+    time_code = datetime_object.strftime("%Y.%m%d.%H%M.%S.%f")[:-3]
     return dict(
         show_idn=show_idn,
         idn=render_num(word.idn),

@@ -111,7 +111,6 @@ def qiki_playground(request):
         for idn in idns:
             word = lex(idn)
             word.do_not_call_in_templates = True
-            word.moo = 'loo'
             words.append(word)
         return django.shortcuts.render(
             request,
