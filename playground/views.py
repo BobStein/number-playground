@@ -153,9 +153,9 @@ def build_qoolbar():
     verb('iconify')
     # like = qool('like')
     like = lex.define(qool, 'like')
-    lex.iconify(like, qiki.Number(1), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
+    lex.iconify(like, qiki.Number(16), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
     delete = lex.define(qool, 'delete')
-    lex.iconify(delete, qiki.Number(1), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
+    lex.iconify(delete, qiki.Number(16), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
 build_qoolbar()
 
 
@@ -185,12 +185,22 @@ def qiki_ajax(request):
                 if action == 'qoolbar_list':
                     lex = get_lex()
                     qool = lex('qool')
+                    define = lex('define')
                     iconify = lex('iconify')
-                    thingies = lex.find_obj_by_vrb(qool, iconify)
+                    qool_verbs = lex.find(vrb=define.idn, obj=qool.idn)
                     report = ""
-                    for thingie in thingies:
+                    for qool_verb in qool_verbs:
                         # report += thingie[0] + " - " + thingie[1] + "<br>\n"
-                        report += str(int(thingie.idn)) + " - " + thingie.txt + "<br>\n"
+                        thingies = lex.find(vrb=iconify.idn, obj=qool_verb.idn)
+                        thingie = thingies[-1]
+                        # report += str(int(thingie.idn)) + " - " + qool_verb.txt + " - " + thingie.txt + "<br>\n"
+                        report += """
+                            {number}. <img src="{url}"> {name}<br>
+                        """.format(
+                            number=str(int(thingie.idn)),
+                            url=thingie.txt,
+                            name=qool_verb.txt,
+                        )
                     return valid_response('report', report)
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
