@@ -152,10 +152,10 @@ def build_qoolbar():
     verb('iconify')
     # like = lex.define(qool, 'like')
     like = verb('like')
-    qool(like)
+    lex.qool(like)
     lex.iconify(like, qiki.Number(16), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
     delete = verb('delete')
-    qool(delete)
+    lex.qool(delete)
     lex.iconify(delete, qiki.Number(16), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
 build_qoolbar()
 
