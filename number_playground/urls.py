@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.conf.urls import patterns, include, url
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
+# from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('',
     # url(r'^$', 'number_playground.views.home', name='home'),
@@ -16,4 +18,6 @@ urlpatterns = patterns('',
     # url('', include('social.apps.django_app.urls', namespace='social')),
 
     url(r'^accounts/', include('allauth.urls')),
-)
+) # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+print(dir(urlpatterns))

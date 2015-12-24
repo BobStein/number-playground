@@ -108,6 +108,10 @@ else:
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, '.' + STATIC_URL))
+# THANKS:  normpath - http://stackoverflow.com/a/21765815/673991
+
+
 
 # TEMPLATE_DIRS = (
 #     os.path.join(BASE_DIR, 'templates'),
