@@ -16,7 +16,14 @@ logger.info("{now}".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S
 import qiki
 try:
     import secure.credentials
-except ImportError as import_error:
+    secure.credentials.for_playground_database
+except (ImportError, AttributeError) as import_or_attribute_error:
+    if isinstance(import_or_attribute_error, AttributeError):
+        print("Wrong secure/credentials.py?  It should define for_playground_database.")
+        try:
+            print("(Instead it defines {}.)".format([m for m in dir(secure.credentials) if m[:2] != '__'][0]))
+        except KeyError:
+            pass
     secure = None
     print("""
         Example secure/credentials.py
@@ -33,7 +40,7 @@ except ImportError as import_error:
 
         You also need an empty secure/__init__.py
     """)
-    logger.exception(import_error)
+    logger.exception(import_or_attribute_error)
     sys.exit(1)
 
 

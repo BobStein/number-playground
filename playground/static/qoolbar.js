@@ -2,7 +2,7 @@
 
 (function(qoolbar, $) {
     if (typeof $ != 'function') {
-        console.error("The qoolbar module requires jQuery.")
+        console.error("The qoolbar.js module requires jQuery.")
     }
 
     qoolbar.html = function() {
