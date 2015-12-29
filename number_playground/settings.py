@@ -163,6 +163,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 # 'django.core.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
+                'django_settings_export.settings_export',
             ],
             'debug': True,
         },
@@ -218,3 +219,12 @@ LOGGING = {
     },
 }
 
+JQUERY_VERSION = '2.1.4'
+JQUERYUI_VERSION = '1.11.4'
+QIKI_AJAX_URL = '/qiki-ajax'
+
+SETTINGS_EXPORT = [
+    'JQUERY_VERSION',
+    'JQUERYUI_VERSION',
+    'QIKI_AJAX_URL',
+]

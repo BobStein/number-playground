@@ -19,11 +19,16 @@ try:
     secure.credentials.for_playground_database
 except (ImportError, AttributeError) as import_or_attribute_error:
     if isinstance(import_or_attribute_error, AttributeError):
-        print("Wrong secure/credentials.py?  It should define for_playground_database.")
         try:
-            print("(Instead it defines {}.)".format([m for m in dir(secure.credentials) if m[:2] != '__'][0]))
+            wrong_variable = [m for m in dir(secure.credentials) if m[:2] != '__'][0]
         except KeyError:
-            pass
+            print("Missing secure/credentials.py?")
+        else:
+            print(
+                "Wrong secure/credentials.py?  "
+                "It should define for_playground_database. "
+                "(Instead it defines {}.)".format(wrong_variable)
+            )
     secure = None
     print("""
         Example secure/credentials.py
@@ -42,9 +47,6 @@ except (ImportError, AttributeError) as import_or_attribute_error:
     """)
     logger.exception(import_or_attribute_error)
     sys.exit(1)
-
-
-QIKI_AJAX_URL = "/qiki-ajax"
 
 
 @ensure_csrf_cookie
@@ -126,7 +128,6 @@ def qiki_playground(request):
                 'user_id': request.user.id,
                 'user_name': request.user.username,
                 'user_email': request.user.email,
-                'QIKI_AJAX_URL': QIKI_AJAX_URL,
                 'words': words,
             }
         )
@@ -197,6 +198,7 @@ def qiki_ajax(request):
                     iconify = lex('iconify')
                     qool_verbs = lex.find(vrb=define.idn, obj=qool.idn)
                     report = ""
+                    verbs = []
                     for qool_verb in qool_verbs:
                         # report += thingie[0] + " - " + thingie[1] + "<br>\n"
                         thingies = lex.find(vrb=iconify.idn, obj=qool_verb.idn)
@@ -209,7 +211,15 @@ def qiki_ajax(request):
                             url=thingie.txt,
                             name=qool_verb.txt,
                         )
-                    return valid_response('report', report)
+                        verbs.append(dict(
+                            idn=str(int(qool_verb.idn)),
+                            icon_url=thingie.txt,
+                            name=qool_verb.txt,
+                        ))
+                    return valid_responses(dict(
+                        report=report,
+                        verbs=verbs,
+                    ))
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
@@ -241,6 +251,14 @@ def valid_response(name, value):
         error_message=''
     )
     response_dict[name] = value
+    return HttpResponse(json.dumps(response_dict))
+
+def valid_responses(valid_dictionary):
+    response_dict = dict(
+        is_valid=True,
+        error_message=''
+    )
+    response_dict.update(valid_dictionary)
     return HttpResponse(json.dumps(response_dict))
 
 def invalid_response(why):
