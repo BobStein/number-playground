@@ -15,7 +15,19 @@
             'qoolbar_list',
             function(response) {
                 $(selector)
-                    .html(qoolbar.build(response.verbs));
+                    .html(qoolbar._build(response.verbs));
+                //noinspection JSLastCommaInObjectLiteral
+                $(selector + ' .qool-verb').draggable({
+                    helper: 'clone',
+                    cursor: '-moz-grabbing',
+                    scroll: false,
+                    start: function() {
+                        qoolbar._associationInProgress();
+                    },
+                    stop: function() {
+                        qoolbar._associationResolved();
+                    },
+                });
             },
             function(error_message) {
                 console.error(error_message);
@@ -35,7 +47,7 @@
         });
     };
 
-    qoolbar.build = function(verbs) {
+    qoolbar._build = function(verbs) {
         var return_value = $("<div/>");
         var num_verbs = verbs.length;
         for (var i_verb=0 ; i_verb < num_verbs ; i_verb++) {
@@ -46,13 +58,20 @@
                 .attr('title', verb.name);
             var verb_html = $('<span/>')
                 .html(img_html)
-                .addClass('qool-verb')
-                .addClass('qool-verb-' + verb.name)
+                .addClass('qool-verb qool-verb-' + verb.name)
                 .attr('data-verb', verb.name);
             return_value.append(verb_html);
         }
         return_value.addClass('qoolbar fade_until_hover');
         return return_value;
+    };
+
+    qoolbar._associationInProgress = function() {   // indicating either (1) nouns are selected, or (2) a verb is dragging
+        $(document.body).css('background-color', 'rgb(200,200,200)');
+    };
+
+    qoolbar._associationResolved = function() {   // indicating normalcy
+        $(document.body).css('background-color', 'rgb(215,215,215)');
     };
 
 }(window.qoolbar = window.qoolbar || {}, jQuery));

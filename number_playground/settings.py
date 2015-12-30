@@ -219,8 +219,8 @@ LOGGING = {
     },
 }
 
-JQUERY_VERSION = '2.1.4'
-JQUERYUI_VERSION = '1.11.4'
+JQUERY_VERSION = '2.1.4'   # https://developers.google.com/speed/libraries/?hl=fr#jquery
+JQUERYUI_VERSION = '1.11.4'   # https://developers.google.com/speed/libraries/?hl=fr#jquery-ui
 QIKI_AJAX_URL = '/qiki-ajax'
 
 SETTINGS_EXPORT = [
