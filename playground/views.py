@@ -155,15 +155,15 @@ def get_lex():
 
 def build_qoolbar():
     lex = get_lex()
-    verb = lex('verb')
-    qool = verb('qool')
-    verb('iconify')
-    # like = lex.define(qool, 'like')
-    like = verb('like')
-    lex.qool(like, qiki.Number(1))   # FIXME:  Don't create a new word if one like it exists already.
+    lex.verb('qool')
+    lex.verb('iconify')
+
+    like = lex.verb('like')
+    lex.qool(like, qiki.Number(1), use_already=True)
     lex.iconify(like, qiki.Number(16), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
-    delete = verb('delete')
-    lex.qool(delete, qiki.Number(1))
+
+    delete = lex.verb('delete')
+    lex.qool(delete, qiki.Number(1), use_already=True)
     lex.iconify(delete, qiki.Number(16), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
 build_qoolbar()
 
