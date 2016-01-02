@@ -16,23 +16,36 @@
             function(response) {
                 $(selector)
                     .html(qoolbar._build(response.verbs));
-                //noinspection JSLastCommaInObjectLiteral
                 $(selector + ' .qool-verb').draggable({
                     helper: 'clone',
                     cursor: '-moz-grabbing',
+                    // TODO:  grab?  -webkit-grab?  move?  http://stackoverflow.com/a/26811031/673991
                     scroll: false,
                     start: function() {
                         qoolbar._associationInProgress();
                     },
                     stop: function() {
                         qoolbar._associationResolved();
-                    },
+                    }
                 });
             },
             function(error_message) {
                 console.error(error_message);
             }
         );
+    };
+
+    qoolbar.drop_object = function(selector) {
+        var objects = $(selector);
+        var objects_without_idn = objects.filter(':not([data-idn])');
+        if (objects_without_idn.length > 0) {
+            console.error(
+                "Drop objects need a data-idn attribute. " +
+                objects_without_idn.length + " out of " +
+                objects.length + " are missing one."
+            );
+        }
+
     };
 
     qoolbar.post = function(action, callback_done, callback_fail) {
@@ -75,6 +88,5 @@
     };
 
 }(window.qoolbar = window.qoolbar || {}, jQuery));
-
 // THANKS:  http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html
 // THANKS:  http://appendto.com/2010/10/how-good-c-habits-can-encourage-bad-javascript-habits-part-1/

@@ -160,7 +160,7 @@ def build_qoolbar():
     verb('iconify')
     # like = lex.define(qool, 'like')
     like = verb('like')
-    lex.qool(like, qiki.Number(1))
+    lex.qool(like, qiki.Number(1))   # FIXME:  Don't create a new word if one like it exists already.
     lex.iconify(like, qiki.Number(16), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
     delete = verb('delete')
     lex.qool(delete, qiki.Number(1))

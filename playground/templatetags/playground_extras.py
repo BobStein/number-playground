@@ -25,6 +25,7 @@ def word_diagram(word, show_idn=False):
     return dict(
         show_idn=show_idn,
         idn=render_num(word.idn),
+        idn_qstring=word.idn.qstring(underscore=1),
         sbj=sbj.txt,
         vrb=vrb.txt,
         obj=obj.txt,

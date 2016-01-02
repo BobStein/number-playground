@@ -4,11 +4,13 @@
 <title>qiki playground</title>
 <link rel="stylesheet" type="text/css" href="{% static 'qoolbar.css' %}" />
 <style>
-    input { font-family: Lucida Console, monospace; }
-    body,td,h1,h2,h3 {
-        font-family: Verdana, sans-serif;
+    body {
         background-color: rgb(215,215,215);
     }
+    body,td,h1,h2,h3 {
+        font-family: Verdana, sans-serif;
+    }
+    input { font-family: Lucida Console, monospace; }
     button { font-family: Times New Roman, serif; }
 {#    #floater_error, #qstring_error { #}
 {#        font-size: small; #}
@@ -72,6 +74,7 @@
         $('#csrftoken').val($.cookie('csrftoken'));
         $('#qoolbar').text("Loading qoolbar...");
         qoolbar.html('#qoolbar');
+        qoolbar.drop_object('.word');
     });
 
     function show_error_message(message) {
