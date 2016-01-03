@@ -196,14 +196,12 @@ def qiki_ajax(request):
                     qool = lex('qool')
                     define = lex('define')
                     iconify = lex('iconify')
-                    qool_verbs = lex.find(vrb=define.idn, obj=qool.idn)
+                    qool_verbs = lex.find(vrb=define, obj=qool)
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
-                        # report += thingie[0] + " - " + thingie[1] + "<br>\n"
-                        thingies = lex.find(vrb=iconify.idn, obj=qool_verb.idn)
+                        thingies = lex.find(vrb=iconify, obj=qool_verb)
                         thingie = thingies[-1]
-                        # report += str(int(thingie.idn)) + " - " + qool_verb.txt + " - " + thingie.txt + "<br>\n"
                         report += """
                             {number}. <img src="{url}"> {name}<br>
                         """.format(
