@@ -45,7 +45,17 @@
                 objects.length + " are missing one."
             );
         }
-
+        objects.droppable({
+            accept: ".qool-verb",
+            hoverClass: 'drop-hover',
+            drop: function(event, ui) {
+                $source = ui.draggable;
+                $dest = $(event.target);
+                verb_name = $source.data('verb');
+                dest_idn = $dest.data('idn');
+                alert("(" + verb_name + ")-->[" + dest_idn + "]");
+            }
+        });
     };
 
     qoolbar.post = function(action, callback_done, callback_fail) {
@@ -60,6 +70,12 @@
         });
     };
 
+    /**
+     * Build the qoolbar div, with verb spans.
+     * @param verbs
+     * @returns {*|HTMLElement}
+     * @private
+     */
     qoolbar._build = function(verbs) {
         var return_value = $("<div/>");
         var num_verbs = verbs.length;

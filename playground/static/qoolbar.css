@@ -45,3 +45,7 @@
                                                   -moz-opacity: 1.00;   /* Firefox */
                                                        opacity: 1.00;   /* Good browsers */
 }
+
+.drop-hover {
+    background-color: white;
+}
