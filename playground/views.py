@@ -191,7 +191,7 @@ def qiki_ajax(request):
                         report += str(int(idn)) + " " + word.description()
                         report += "\n"
                     return valid_response('report', report)
-                if action == 'qoolbar_list':
+                elif action == 'qoolbar_list':
                     lex = get_lex()
                     qool = lex('qool')
                     define = lex('define')
@@ -218,6 +218,15 @@ def qiki_ajax(request):
                         report=report,
                         verbs=verbs,
                     ))
+                elif action == 'sentenc':
+                    sbj = form.cleaned_data['sbj']
+                    vrb = form.cleaned_data['vrb']
+                    obj = form.cleaned_data['obj']
+                    txt = form.cleaned_data['txt']
+                    num = form.cleaned_data['num']
+                    sbj_idn = qiki.Number(sbj) # e.g. '0x82_2A'
+                    vrb_idn = qiki.Word()
+                    obj_idn = qiki.Number(obj) # e.g. '0x82_2A'
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
