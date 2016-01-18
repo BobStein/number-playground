@@ -81,17 +81,17 @@
         $("#error_message").append(document.createTextNode(message));
     }
 
-    function qiki_server(action, callback_done, callback_fail) {
-        $.post(QIKI_AJAX_URL, {
-            'action': action,
-            'csrfmiddlewaretoken': $.cookie('csrftoken')
-        }).done(function(response_body) {
-            var response_object = jQuery.parseJSON(response_body);
-            callback_done(response_object);
-        }).fail(function(jqXHR) {
-            callback_fail(jqXHR.responseText);
-        });
-    }
+{#    function qiki_server(action, callback_done, callback_fail) {#}
+{#        $.post(QIKI_AJAX_URL, {#}
+{#            'action': action,#}
+{#            'csrfmiddlewaretoken': $.cookie('csrftoken')#}
+{#        }).done(function(response_body) {#}
+{#            var response_object = jQuery.parseJSON(response_body);#}
+{#            callback_done(response_object);#}
+{#        }).fail(function(jqXHR) {#}
+{#            callback_fail(jqXHR.responseText);#}
+{#        });#}
+{#    }#}
 
 </script>
 </head>
@@ -119,7 +119,7 @@
 <pre id="report_block"></pre>
 <pre id="error_message"></pre>
 
-<form action="{{ QIKI_AJAX_URL }}" method="post">
+<form action="{{ settings.QIKI_AJAX_URL }}" method="post">
     <input type="hidden" name="action" value="comment">
     <input id="csrftoken" type="hidden" name="csrfmiddlewaretoken" value="tbd...">
     <input name="comment" title=""/>

@@ -2,23 +2,23 @@
 {% spaceless %}
     <div class="word" data-idn="{{ idn_qstring }}">
         {% if show_idn %}
-            <span class="idn">{{ idn }}.</span>
+            <span class="idn" title="{{ idn_qstring }}">{{ idn }}.</span>
         {% endif %}
         <span class="sbj-x-{{ sbj }}">
-            <span class="sbj">{{ sbj }}</span>
+            <span class="sbj" title="{{ sbj_idn }}">{{ sbj }}</span>
             <span class="sbj-x-vrb">&rarr;</span>
         </span>
         <span class="vrb-x-num-x-{{ vrb }}">
             <span class="vrb-num vrb-{{ vrb }}">
-                <span class="vrb vrb-{{ vrb }}">{{ vrb }}</span>
+                <span class="vrb vrb-{{ vrb }}" title="{{ vrb_idn }}">{{ vrb }}</span>
                 {% if num != "1.0" and num != "1" %}
                     <span class="vrb-x-num">&times;</span>
-                    <span class="num">{{ num }}</span>
+                    <span class="num" title="{{ num_qstring }}">{{ num }}</span>
                 {% endif %}
             </span>
             <span class="vrb-x-obj">&rarr;</span>
         </span>
-        <span class="obj">{{ obj }}</span>
+        <span class="obj" title="{{ obj_idn }}">{{ obj }}</span>
         {% if txt != "" %}
             <span class="txt txt-{{ is_a_what }}">{{ txt }}</span>
             {# TODO:  classes for entire define hierarchy, e.g. txt-user txt-agent txt-noun #}

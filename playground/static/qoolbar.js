@@ -13,6 +13,7 @@
     qoolbar.html = function(selector) {
         qoolbar.post(
             'qoolbar_list',
+            {},
             function(response) {
                 $(selector)
                     .html(qoolbar._build(response.verbs));
@@ -53,16 +54,29 @@
                 $dest = $(event.target);
                 verb_name = $source.data('verb');
                 dest_idn = $dest.data('idn');
-                alert("(" + verb_name + ")-->[" + dest_idn + "]");
+                qoolbar.post(
+                    'sentence',
+                    {
+                        vrb: verb_name,
+                        obj: dest_idn,
+                        num: '0q82',
+                        txt: ''
+                    },
+                    function(response) {
+                        if (response.is_valid) {
+                            alert(response.report);
+                        } else {
+                            alert(response.error_message);
+                        }
+                    })
             }
         });
     };
 
-    qoolbar.post = function(action, callback_done, callback_fail) {
-        $.post(qoolbar._ajax_url, {
-            'action': action,
-            'csrfmiddlewaretoken': $.cookie('csrftoken')
-        }).done(function(response_body) {
+    qoolbar.post = function(action, variables, callback_done, callback_fail) {
+        variables.action = action;
+        variables.csrfmiddlewaretoken = $.cookie('csrftoken');
+        $.post(qoolbar._ajax_url, variables).done(function(response_body) {
             var response_object = jQuery.parseJSON(response_body);
             callback_done(response_object);
         }).fail(function(jqXHR) {

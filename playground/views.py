@@ -16,10 +16,12 @@ logger.info("{now}".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S
 import qiki
 try:
     import secure.credentials
+    # noinspection PyStatementEffect
     secure.credentials.for_playground_database
 except (ImportError, AttributeError) as import_or_attribute_error:
     if isinstance(import_or_attribute_error, AttributeError):
         try:
+            # noinspection PyUnboundLocalVariable
             wrong_variable = [m for m in dir(secure.credentials) if m[:2] != '__'][0]
         except KeyError:
             print("Missing secure/credentials.py?")
@@ -62,15 +64,15 @@ def number_playground(request):
     # return HttpResponse(t.render(c))
 
 
-class Playform(forms.Form):
+class NumberPlaygroundForm(forms.Form):
     action  = forms.CharField(required=False)
     qstring = forms.CharField(required=False)
     floater = forms.CharField(required=False)
 
 
-def qikinumber(request):
+def number_playground_submission(request):
     if request.method == 'POST':
-        form = Playform(request.POST)
+        form = NumberPlaygroundForm(request.POST)
         if form.is_valid():
             action = form.cleaned_data['action']
             if action == 'qstring_to_float':
@@ -168,10 +170,16 @@ def build_qoolbar():
 build_qoolbar()
 
 
-class QikiPlaygroundForm(forms.Form):
+class QikiActionForm(forms.Form):
     action  = forms.CharField(required=True)
     comment = forms.CharField(required=False)
 
+
+class QikiActionSentenceForm(QikiActionForm):
+    vrb = forms.CharField(required=True)
+    obj = forms.CharField(required=True)
+    num = forms.CharField(required=True)
+    txt = forms.CharField(required=False)
 
 @login_required
 def qiki_ajax(request):
@@ -179,7 +187,7 @@ def qiki_ajax(request):
         return HttpResponse("Log in")
     else:
         if request.method == 'POST':
-            form = QikiPlaygroundForm(request.POST)
+            form = QikiActionForm(request.POST)
             if form.is_valid():
                 action = form.cleaned_data['action']
                 if action == 'qiki_list':
@@ -200,33 +208,74 @@ def qiki_ajax(request):
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
-                        thingies = lex.find(vrb=iconify, obj=qool_verb)
-                        thingie = thingies[-1]
+                        icons = lex.find(vrb=iconify, obj=qool_verb)
+                        icon = icons[-1]
                         report += """
                             {number}. <img src="{url}"> {name}<br>
                         """.format(
-                            number=str(int(thingie.idn)),
-                            url=thingie.txt,
+                            number=str(int(icon.idn)),
+                            url=icon.txt,
                             name=qool_verb.txt,
                         )
                         verbs.append(dict(
                             idn=str(int(qool_verb.idn)),
-                            icon_url=thingie.txt,
+                            icon_url=icon.txt,
                             name=qool_verb.txt,
                         ))
                     return valid_responses(dict(
                         report=report,
                         verbs=verbs,
                     ))
-                elif action == 'sentenc':
-                    sbj = form.cleaned_data['sbj']
-                    vrb = form.cleaned_data['vrb']
-                    obj = form.cleaned_data['obj']
-                    txt = form.cleaned_data['txt']
-                    num = form.cleaned_data['num']
-                    sbj_idn = qiki.Number(sbj) # e.g. '0x82_2A'
-                    vrb_idn = qiki.Word()
-                    obj_idn = qiki.Number(obj) # e.g. '0x82_2A'
+                elif action == 'sentence':
+                    sentence_form = QikiActionSentenceForm(request.POST)
+                    me = DjangoUser(qiki.Number(request.user.id))
+                    lex = get_lex()
+                    if sentence_form.is_valid():
+                        try:
+                            vrb_idn = lex(sentence_form.cleaned_data['vrb']).idn
+                        except qiki.Number.ConstructorTypeError:
+                            vrb_idn = qiki.Number(sentence_form.cleaned_data['vrb'])
+                        obj_idn = qiki.Number(sentence_form.cleaned_data['obj']) # e.g. '0x82_2A'
+                        num = qiki.Number(sentence_form.cleaned_data['num'])
+                        txt = sentence_form.cleaned_data['txt']
+
+                        vrb=lex(vrb_idn)
+                        if not vrb.exists:
+                            return invalid_response("Verb '{}' does not exist.".format(
+                                sentence_form.cleaned_data['vrb']))
+                        if not vrb.is_a_verb():
+                            return invalid_response("Word '{}' is not a verb.".format(
+                                sentence_form.cleaned_data['vrb']))
+
+                        obj=lex(obj_idn)
+                        if not obj.exists:
+                            return invalid_response("Object '{}' does not exist.".format(
+                                sentence_form.cleaned_data['obj']))
+
+                        lex.sentence(
+                            sbj=me,
+                            vrb=vrb,
+                            obj=obj,
+                            num=num,
+                            txt=txt,
+                        )
+                        return django.shortcuts.redirect('/qiki-playground/')
+                        # return valid_responses(dict(
+                        #     report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
+                        #         sbj=sbj_idn.qstring(),
+                        #         vrb=vrb_idn.qstring(),
+                        #         obj=obj_idn.qstring(),
+                        #         num=num.qstring(),
+                        #         txt=txt,
+                        #     )
+                        # ))
+                    else:
+                        actual_keys = list(sentence_form.cleaned_data.keys())
+                        return invalid_response("Sentence needs sbj, vrb, obj, num, txt.\n"
+                                                "Only got: {}".format(
+                            ", ".join(actual_keys)
+                        ))
+                        # XXX:  Why does this "form" include a 'comment' field?!?
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
@@ -247,9 +296,9 @@ def qiki_ajax(request):
                 else:
                     return HttpResponseNotFound("Action '%s' is not supported" % action)
             else:
-                return HttpResponse('whoa %s' % repr(form.errors))
+                return HttpResponse("Whoa %s" % repr(form.errors))
         else:
-            return HttpResponse('Oops, this is a POST-only URL.')
+            return HttpResponse("Oops, this is a POST-only URL.")
 
 
 def valid_response(name, value):
@@ -268,9 +317,9 @@ def valid_responses(valid_dictionary):
     response_dict.update(valid_dictionary)
     return HttpResponse(json.dumps(response_dict))
 
-def invalid_response(why):
+def invalid_response(error_message):
     response_dict = dict(
         is_valid=False,
-        error_message=why
+        error_message=error_message
     )
     return HttpResponse(json.dumps(response_dict))
