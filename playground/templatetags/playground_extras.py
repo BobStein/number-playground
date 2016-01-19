@@ -1,6 +1,6 @@
 import datetime
 
-import django
+import django.template
 
 
 register = django.template.Library()
@@ -25,7 +25,7 @@ def word_diagram(word, show_idn=False):
     obj_txt = obj.txt
     if obj_txt == '':
         obj_txt = "Word {}".format(render_num(obj.idn))
-        # TODO:  This will have to be smarter.  Comment objects shouldn't be indentified by txt alone.  Arrows??
+        # TODO:  This will have to be smarter.  Comment objects shouldn't be identified by txt alone.  Arrows??
     return dict(
         show_idn=show_idn,
         idn=render_num(word.idn),

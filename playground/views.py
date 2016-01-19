@@ -259,16 +259,16 @@ def qiki_ajax(request):
                             num=num,
                             txt=txt,
                         )
-                        return django.shortcuts.redirect('/qiki-playground/')
-                        # return valid_responses(dict(
-                        #     report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
-                        #         sbj=sbj_idn.qstring(),
-                        #         vrb=vrb_idn.qstring(),
-                        #         obj=obj_idn.qstring(),
-                        #         num=num.qstring(),
-                        #         txt=txt,
-                        #     )
-                        # ))
+                        # return django.shortcuts.redirect('/qiki-playground/')
+                        return valid_responses(dict(
+                            report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
+                                sbj=me.idn.qstring(),
+                                vrb=vrb_idn.qstring(),
+                                obj=obj_idn.qstring(),
+                                num=num.qstring(),
+                                txt=txt,
+                            )
+                        ))
                     else:
                         actual_keys = list(sentence_form.cleaned_data.keys())
                         return invalid_response("Sentence needs sbj, vrb, obj, num, txt.\n"

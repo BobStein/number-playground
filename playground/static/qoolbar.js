@@ -1,4 +1,5 @@
 // qoolbar.js - a menu of qiki verb icons to apply to things on a web page.
+'use strict';
 
 (function(qoolbar, $) {
     if (typeof $ != 'function') {
@@ -17,10 +18,11 @@
             function(response) {
                 $(selector)
                     .html(qoolbar._build(response.verbs));
+                //noinspection JSUnusedGlobalSymbols
                 $(selector + ' .qool-verb').draggable({
                     helper: 'clone',
                     cursor: '-moz-grabbing',
-                    // TODO:  grab?  -webkit-grab?  move?  http://stackoverflow.com/a/26811031/673991
+                    // TODO:  grabby cursor?  -webkit-grab?  move?  http://stackoverflow.com/a/26811031/673991
                     scroll: false,
                     start: function() {
                         qoolbar._associationInProgress();
@@ -46,25 +48,28 @@
                 objects.length + " are missing one."
             );
         }
+        //noinspection JSUnusedGlobalSymbols
         objects.droppable({
             accept: ".qool-verb",
             hoverClass: 'drop-hover',
             drop: function(event, ui) {
-                $source = ui.draggable;
-                $dest = $(event.target);
-                verb_name = $source.data('verb');
-                dest_idn = $dest.data('idn');
+                var $source = ui.draggable;
+                var $destination = $(event.target);
+                var verb_name = $source.data('verb');
+                var destination_idn = $destination.data('idn');
                 qoolbar.post(
                     'sentence',
                     {
                         vrb: verb_name,
-                        obj: dest_idn,
+                        obj: destination_idn,
                         num: '0q82',
                         txt: ''
                     },
                     function(response) {
+
                         if (response.is_valid) {
-                            alert(response.report);
+                            // alert(response.report);
+                            window.location.reload(true);
                         } else {
                             alert(response.error_message);
                         }
@@ -74,14 +79,24 @@
     };
 
     qoolbar.post = function(action, variables, callback_done, callback_fail) {
+        var fail_function;
+        if (typeof callback_fail === 'undefined') {
+            fail_function = qoolbar._default_fail_callback;
+        } else {
+            fail_function = callback_fail;
+        }
         variables.action = action;
         variables.csrfmiddlewaretoken = $.cookie('csrftoken');
         $.post(qoolbar._ajax_url, variables).done(function(response_body) {
             var response_object = jQuery.parseJSON(response_body);
             callback_done(response_object);
         }).fail(function(jqXHR) {
-            callback_fail(jqXHR.responseText);
+            fail_function(jqXHR.responseText);
         });
+    };
+
+    qoolbar._default_fail_callback = function(error_message) {
+        alert(error_message);
     };
 
     /**
