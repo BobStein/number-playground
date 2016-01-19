@@ -66,7 +66,6 @@
                         txt: ''
                     },
                     function(response) {
-
                         if (response.is_valid) {
                             // alert(response.report);
                             window.location.reload(true);
