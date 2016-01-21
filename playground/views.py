@@ -204,11 +204,11 @@ def qiki_ajax(request):
                     qool = lex('qool')
                     define = lex('define')
                     iconify = lex('iconify')
-                    qool_verbs = lex.find(vrb=define, obj=qool)
+                    qool_verbs = lex.find_words(vrb=define, obj=qool)
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
-                        icons = lex.find(vrb=iconify, obj=qool_verb)
+                        icons = lex.find_words(vrb=iconify, obj=qool_verb)
                         icon = icons[-1]
                         report += """
                             {number}. <img src="{url}"> {name}<br>
