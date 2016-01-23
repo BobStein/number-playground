@@ -117,7 +117,7 @@ def qiki_playground(request):
         return "Log in"
     else:
         lex = get_lex()
-        idns = lex.get_all_idns()
+        idns = lex.find_idns()
         words = []
         for idn in idns:
             word = lex(idn)
