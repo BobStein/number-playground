@@ -117,12 +117,15 @@ def qiki_playground(request):
         return "Log in"
     else:
         lex = get_lex()
-        idns = lex.find_idns()
-        words = []
-        for idn in idns:
-            word = lex(idn)
+        words = lex.find_words()
+        # for idn in idns:
+        #     word = lex(idn)
+        #     word.do_not_call_in_templates = True
+        #     words.append(word)
+        for word in words:
             word.do_not_call_in_templates = True
-            words.append(word)
+            # THANKS:  to somebody for this flag, maybe http://stackoverflow.com/a/21711308/673991
+            # TODO:  Move this to word.py?  So it's like that for everyone??  Makes a little sense.
         return django.shortcuts.render(
             request,
             'qiki-playground.html',
@@ -302,6 +305,7 @@ def qiki_ajax(request):
 
 
 def valid_response(name, value):
+    """Good conclusion, one name=value pair to return to the browser."""
     response_dict = dict(
         is_valid=True,
         error_message=''
@@ -310,6 +314,7 @@ def valid_response(name, value):
     return HttpResponse(json.dumps(response_dict))
 
 def valid_responses(valid_dictionary):
+    """Good conclusion, multiple name=value pairs to return to the browser."""
     response_dict = dict(
         is_valid=True,
         error_message=''
