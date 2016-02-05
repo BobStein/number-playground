@@ -158,7 +158,7 @@ def get_lex():
     return lex
 
 
-def build_qoolbar():
+def install_qoolbar_verbs():
     lex = get_lex()
     lex.verb('qool')
     lex.verb('iconify')
@@ -170,7 +170,7 @@ def build_qoolbar():
     delete = lex.verb('delete')
     lex.qool(delete, qiki.Number(1), use_already=True)
     lex.iconify(delete, qiki.Number(16), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
-build_qoolbar()
+install_qoolbar_verbs()
 
 
 class QikiActionForm(forms.Form):
@@ -203,11 +203,12 @@ def qiki_ajax(request):
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'qoolbar_list':
+                    # XXX:  OBSOLETED by
+                    #     number_playground/playground/static/qoolbar.js
+                    #     number_playground/playground/templatetags/playground_extras.py
                     lex = get_lex()
-                    qool = lex('qool')
-                    define = lex('define')
                     iconify = lex('iconify')
-                    qool_verbs = lex.find_words(vrb=define, obj=qool)
+                    qool_verbs = lex.find_words(vrb=lex('define'), obj=lex('qool'))
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
