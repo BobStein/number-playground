@@ -203,7 +203,7 @@ def qiki_ajax(request):
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'qoolbar_list':
-                    # XXX:  OBSOLETED by
+                    # Used by:
                     #     number_playground/playground/static/qoolbar.js
                     #     number_playground/playground/templatetags/playground_extras.py
                     lex = get_lex()
