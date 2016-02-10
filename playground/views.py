@@ -117,13 +117,18 @@ def qiki_playground(request):
         return "Log in"
     else:
         lex = get_lex()
-        words = lex.find_words(sql='')
+        qool = lex.verb('qool')
+        qool_declarations = lex.find_words(vrb=qool.idn)
+        qool_idns = [w.obj for w in qool_declarations]
+        words = lex.find_words(jbo_vrb=qool_idns)
         # for idn in idns:
         #     word = lex(idn)
         #     word.do_not_call_in_templates = True
         #     words.append(word)
         for word in words:
             word.do_not_call_in_templates = True
+            for x in word.jbo:
+                x.do_not_call_in_templates = True
             # THANKS:  to somebody for this flag, maybe http://stackoverflow.com/a/21711308/673991
             # TODO:  Move this to word.py?  So it's like that for everyone??  Makes a little sense.
         return django.shortcuts.render(
@@ -213,6 +218,7 @@ def qiki_ajax(request):
                     verbs = []
                     for qool_verb in qool_verbs:
                         icons = lex.find_words(vrb=iconify, obj=qool_verb)
+                        # TODO:  Limit find_words to latest iconify using sql.
                         icon = icons[-1]
                         report += """
                             {number}. <img src="{url}"> {name}<br>

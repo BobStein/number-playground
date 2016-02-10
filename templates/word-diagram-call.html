@@ -1,3 +1,4 @@
+{% load playground_extras %}
 
 {% spaceless %}
     <div class="word" data-idn="{{ idn_qstring }}">
@@ -24,5 +25,8 @@
             {# TODO:  classes for entire define hierarchy, e.g. txt-user txt-agent txt-noun #}
         {% endif %}
 {#        <span class="whn-time-code">{{ yyyy_mmdd_hhmm_ss_mmm }}</span>#}
+        {% for x in jbo %}
+            {% jbo_diagram x %}
+        {% endfor %}
     </div>
 {% endspaceless %}

@@ -6,6 +6,17 @@ import django.template
 register = django.template.Library()
 
 
+@register.inclusion_tag('jbo-diagram-call.html')
+def jbo_diagram(x):
+    lex = x.lex
+    iconify = lex('iconify')
+    icons = lex.find_words(vrb=iconify, obj=x.vrb)
+    # TODO:  Limit find_words to latest iconify using sql.
+    icon = icons[-1]
+    return dict(
+        icon_src=icon.txt
+    )
+
 @register.inclusion_tag('word-diagram-call.html')
 def word_diagram(word, show_idn=False):
     sbj = word.spawn(word.sbj)
@@ -41,6 +52,7 @@ def word_diagram(word, show_idn=False):
         sbj_idn=sbj.idn.qstring(),
         vrb_idn=vrb.idn.qstring(),
         obj_idn=obj.idn.qstring(),
+        jbo=word.jbo,
     )
 
 def render_num(num):
