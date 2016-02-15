@@ -14,7 +14,8 @@ def jbo_diagram(x):
     # TODO:  Limit find_words to latest iconify using sql.
     icon = icons[-1]
     return dict(
-        icon_src=icon.txt
+        icon_src=icon.txt,
+        num_if_not_one=str(int(x.num)) if x.num != 1 else ''
     )
 
 @register.inclusion_tag('word-diagram-call.html')

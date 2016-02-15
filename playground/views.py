@@ -121,16 +121,6 @@ def qiki_playground(request):
         qool_declarations = lex.find_words(vrb=qool.idn)
         qool_idns = [w.obj for w in qool_declarations]
         words = lex.find_words(jbo_vrb=qool_idns)
-        # for idn in idns:
-        #     word = lex(idn)
-        #     word.do_not_call_in_templates = True
-        #     words.append(word)
-        for word in words:
-            word.do_not_call_in_templates = True
-            for x in word.jbo:
-                x.do_not_call_in_templates = True
-            # THANKS:  to somebody for this flag, maybe http://stackoverflow.com/a/21711308/673991
-            # TODO:  Move this to word.py?  So it's like that for everyone??  Makes a little sense.
         return django.shortcuts.render(
             request,
             'qiki-playground.html',
@@ -186,7 +176,8 @@ class QikiActionForm(forms.Form):
 class QikiActionSentenceForm(QikiActionForm):
     vrb = forms.CharField(required=True)
     obj = forms.CharField(required=True)
-    num = forms.CharField(required=True)
+    num = forms.CharField(required=False, initial='0q82')
+    num_delta = forms.CharField(required=False, initial='0q80')
     txt = forms.CharField(required=False)
 
 @login_required
@@ -246,8 +237,9 @@ def qiki_ajax(request):
                         except qiki.Number.ConstructorTypeError:
                             vrb_idn = qiki.Number(sentence_form.cleaned_data['vrb'])
                         obj_idn = qiki.Number(sentence_form.cleaned_data['obj']) # e.g. '0x82_2A'
-                        num = qiki.Number(sentence_form.cleaned_data['num'])
-                        txt = sentence_form.cleaned_data['txt']
+                        num = qiki.Number(sentence_form.cleaned_data.get('num', '0q82'))
+                        _ = qiki.Number(sentence_form.cleaned_data.get('num_delta', '0q80'))
+                        txt = sentence_form.cleaned_data.get('txt', '')
 
                         vrb=lex(vrb_idn)
                         if not vrb.exists:
