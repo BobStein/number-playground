@@ -177,7 +177,7 @@ class QikiActionSentenceForm(QikiActionForm):
     vrb = forms.CharField(required=True)
     obj = forms.CharField(required=True)
     num = forms.CharField(required=False, initial='0q82')
-    num_delta = forms.CharField(required=False, initial='0q80')
+    num_add = forms.CharField(required=False, initial='0q80')
     txt = forms.CharField(required=False)
 
 @login_required
@@ -237,8 +237,13 @@ def qiki_ajax(request):
                         except qiki.Number.ConstructorTypeError:
                             vrb_idn = qiki.Number(sentence_form.cleaned_data['vrb'])
                         obj_idn = qiki.Number(sentence_form.cleaned_data['obj']) # e.g. '0x82_2A'
-                        num = qiki.Number(sentence_form.cleaned_data.get('num', '0q82'))
-                        _ = qiki.Number(sentence_form.cleaned_data.get('num_delta', '0q80'))
+
+                        num_field = sentence_form.cleaned_data.get('num', None)
+                        num = None if num_field == '' else qiki.Number(num_field)
+
+                        num_add_field = sentence_form.cleaned_data.get('num_add', None)
+                        num_add = None if num_add_field == '' else qiki.Number(num_add_field)
+
                         txt = sentence_form.cleaned_data.get('txt', '')
 
                         vrb=lex(vrb_idn)
@@ -254,11 +259,12 @@ def qiki_ajax(request):
                             return invalid_response("Object '{}' does not exist.".format(
                                 sentence_form.cleaned_data['obj']))
 
-                        lex.sentence(
+                        word = lex.sentence(
                             sbj=me,
                             vrb=vrb,
                             obj=obj,
                             num=num,
+                            num_add=num_add,
                             txt=txt,
                         )
                         # return django.shortcuts.redirect('/qiki-playground/')
@@ -267,7 +273,7 @@ def qiki_ajax(request):
                                 sbj=me.idn.qstring(),
                                 vrb=vrb_idn.qstring(),
                                 obj=obj_idn.qstring(),
-                                num=num.qstring(),
+                                num=word.num.qstring(),
                                 txt=txt,
                             )
                         ))

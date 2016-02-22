@@ -62,8 +62,7 @@
                     {
                         vrb: verb_name,
                         obj: destination_idn,
-                        num_delta: '0q80',
-                        num: '0q82',
+                        num_add: '0q82',
                         txt: ''
                     },
                     function(response) {
