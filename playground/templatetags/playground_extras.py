@@ -9,7 +9,7 @@ register = django.template.Library()
 @register.inclusion_tag('jbo-diagram-call.html')
 def jbo_diagram(x):
     lex = x.lex
-    iconify = lex('iconify')
+    iconify = lex(u'iconify')
     icons = lex.find_words(vrb=iconify, obj=x.vrb)
     # TODO:  Limit find_words to latest iconify using sql.
     icon = icons[-1]

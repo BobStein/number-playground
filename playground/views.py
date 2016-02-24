@@ -117,7 +117,7 @@ def qiki_playground(request):
         return "Log in"
     else:
         lex = get_lex()
-        qool = lex.verb('qool')
+        qool = lex.verb(u'qool')
         qool_declarations = lex.find_words(vrb=qool.idn)
         qool_idns = [w.obj for w in qool_declarations]
         words = lex.find_words(jbo_vrb=qool_idns)
@@ -145,9 +145,9 @@ class DjangoUser(qiki.Listing):
 
 def get_lex():
     lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
-    listing = lex.noun('listing')
+    listing = lex.noun(u'listing')
     qiki.Listing.install(listing)
-    django_user = listing('django_user')
+    django_user = listing(u'django_user')
     DjangoUser.install(django_user)
     # raise Exception
     return lex
@@ -155,16 +155,16 @@ def get_lex():
 
 def install_qoolbar_verbs():
     lex = get_lex()
-    lex.verb('qool')
-    lex.verb('iconify')
+    lex.verb(u'qool')
+    lex.verb(u'iconify')
 
-    like = lex.verb('like')
+    like = lex.verb(u'like')
     lex.qool(like, qiki.Number(1), use_already=True)
-    lex.iconify(like, qiki.Number(16), 'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
+    lex.iconify(like, qiki.Number(16), u'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
 
-    delete = lex.verb('delete')
+    delete = lex.verb(u'delete')
     lex.qool(delete, qiki.Number(1), use_already=True)
-    lex.iconify(delete, qiki.Number(16), 'http://tool.qiki.info/icon/delete_16.png', use_already=True)
+    lex.iconify(delete, qiki.Number(16), u'http://tool.qiki.info/icon/delete_16.png', use_already=True)
 install_qoolbar_verbs()
 
 
@@ -203,8 +203,8 @@ def qiki_ajax(request):
                     #     number_playground/playground/static/qoolbar.js
                     #     number_playground/playground/templatetags/playground_extras.py
                     lex = get_lex()
-                    iconify = lex('iconify')
-                    qool_verbs = lex.find_words(vrb=lex('define'), obj=lex('qool'))
+                    iconify = lex(u'iconify')
+                    qool_verbs = lex.find_words(vrb=lex(u'define'), obj=lex(u'qool'))
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
@@ -288,7 +288,7 @@ def qiki_ajax(request):
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
                     me = DjangoUser(qiki.Number(request.user.id))
-                    lex.verb('comment')
+                    lex.verb(u'comment')
                     me.comment(lex, qiki.Number(1), comment_text)
                     # # me.comment(lex, 1, comment_text)
                     # # TODO:  Would this work if there were a me.lex?
