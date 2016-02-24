@@ -13,9 +13,11 @@ def jbo_diagram(x):
     icons = lex.find_words(vrb=iconify, obj=x.vrb)
     # TODO:  Limit find_words to latest iconify using sql.
     icon = icons[-1]
+    sbj = x.spawn(x.sbj)
     return dict(
         icon_src=icon.txt,
-        num_if_not_one=str(int(x.num)) if x.num != 1 else ''
+        num_if_not_one=str(int(x.num)) if x.num != 1 else '',
+        sbj_txt=sbj.txt
     )
 
 @register.inclusion_tag('word-diagram-call.html')
@@ -34,6 +36,13 @@ def word_diagram(word, show_idn=False):
         is_a_what = "else"
     datetime_object = datetime.datetime.fromtimestamp(float(word.whn))
     time_code = datetime_object.strftime("%Y.%m%d.%H%M.%S.%f")[:-3]
+
+    lex = word.lex
+    jbo_report = []
+    for q in word.jbo:
+        author = lex(q.sbj).txt
+        jbo_report.append(author)
+
     obj_txt = obj.txt
     if obj_txt == '':
         obj_txt = "Word {}".format(render_num(obj.idn))
@@ -54,6 +63,7 @@ def word_diagram(word, show_idn=False):
         vrb_idn=vrb.idn.qstring(),
         obj_idn=obj.idn.qstring(),
         jbo=word.jbo,
+        jbo_report=jbo_report,
     )
 
 def render_num(num):
