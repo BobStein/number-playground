@@ -77,7 +77,41 @@ $(document).ready(function() {
     $('#qoolbar').text("Loading qoolbar...");
     qoolbar.html('#qoolbar');
     qoolbar.drop_object('.word');
+
+    show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling");
+    show_or_hide('#show-lex', '.sbj-lex', "lex");
 });
+
+function show_or_hide(button, selector, description) {
+    _paint_show_or_hide(button, selector, description, false);
+    $(button).on('click hover', function(e) {
+        _paint_show_or_hide(button, selector, description, e.type == 'click');
+    });
+}
+
+function _paint_show_or_hide(button, selector, description, do_toggle) {
+    var is_shown = $(button).data('is-shown');
+    var is_hovering = false;   // FIXME:  $(button).is(':hover');   http://stackoverflow.com/a/8981521/673991
+    if (do_toggle) {
+        is_shown = !is_shown;
+        $(button).data('is-shown', is_shown);
+    }
+    if (is_shown) {
+        if (is_hovering) {
+            $(button).text("hide " + description + " words");
+        } else {
+            $(button).text(description + " words shown");
+        }
+        $(selector).show();
+    } else {
+        if (is_hovering) {
+            $(button).text("show " + description + " words");
+        } else {
+            $(button).text(description + " words hidden");
+        }
+        $(selector).hide();
+    }
+}
 
 function show_error_message(message) {
     $("#error_message").append(document.createTextNode(message));
@@ -102,6 +136,9 @@ function show_error_message(message) {
 
 <p>
     Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }}.
+
+    <button id="show-qooling" data-is-shown="true"></button>
+    <button id="show-lex" data-is-shown="true"></button>
 </p>
 
 <p>
@@ -118,6 +155,7 @@ function show_error_message(message) {
     {#    <a href="{% provider_login_url "facebook" %}">Facebook</a>#}
 </p>
 
+
 <pre id="report_block"></pre>
 <pre id="error_message"></pre>
 
@@ -133,7 +171,7 @@ function show_error_message(message) {
 <div class="word-diagram">
     <ul>
         {% for word in words reversed %}
-            <li>{% word_diagram word show_idn=True %}</li>
+            <li class="{{ word.vrb_txt }} {{ word.sbj_txt }} {{ word.vrb_jbo_vrb_qool }}">{% word_diagram word show_idn=True %}</li>
         {% endfor %}
     </ul>
 </div>

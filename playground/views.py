@@ -119,8 +119,18 @@ def qiki_playground(request):
         lex = get_lex()
         qool = lex.verb(u'qool')
         qool_declarations = lex.find_words(vrb=qool.idn)
-        qool_idns = [w.obj for w in qool_declarations]
+        qool_idns = {w.obj for w in qool_declarations}
+        print(repr(qool_idns))
         words = lex.find_words(jbo_vrb=qool_idns)
+        for word in words:
+            word.sbj_txt = u'sbj-' + lex(word.sbj).txt
+            word.vrb_txt = u'vrb-' + lex(word.vrb).txt
+            word.vrb_jbo_vrb_qool = u'vrb-jbo-vrb-qool' if word.vrb in qool_idns else u''
+            # TODO:  Obviate the above tedium by "soft" words
+            # e.g. w=Word(idn) doesn't populate (harden, meaning read its sentence from the database)
+            # until w.sbj is used
+            # and when it does, w.sbj is (at first) another soft word within the (now hardened) w.
+            # This could pave the way for reverse lookups, e.g. w.jbo(vrb=qool_verbs)
         return django.shortcuts.render(
             request,
             'qiki-playground.html',
