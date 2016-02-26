@@ -96,7 +96,6 @@ function _paint_show_or_hide(button, selector, description, occasion) {
     var is_shown = $(button).data('is-shown');
     var is_hovering = occasion == 'mouseenter';
     var do_toggle = occasion == 'click';
-    // FIXME:  $(button).is(':hover');   http://stackoverflow.com/a/8981521/673991
     if (do_toggle) {
         is_shown = !is_shown;
         $(button).data('is-shown', is_shown);
