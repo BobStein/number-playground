@@ -120,7 +120,6 @@ def qiki_playground(request):
         qool = lex.verb(u'qool')
         qool_declarations = lex.find_words(vrb=qool.idn)
         qool_idns = {w.obj for w in qool_declarations}
-        print(repr(qool_idns))
         words = lex.find_words(jbo_vrb=qool_idns)
         for word in words:
             word.sbj_txt = u'sbj-' + lex(word.sbj).txt

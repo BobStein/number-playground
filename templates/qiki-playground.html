@@ -83,33 +83,40 @@ $(document).ready(function() {
 });
 
 function show_or_hide(button, selector, description) {
-    _paint_show_or_hide(button, selector, description, false);
-    $(button).on('click hover', function(e) {
-        _paint_show_or_hide(button, selector, description, e.type == 'click');
+    _paint_show_or_hide(button, selector, description, 'initial');
+    $(button).on('click mouseenter mouseleave', function(e) {
+        _paint_show_or_hide(this, selector, description, e.type);
     });
 }
 
-function _paint_show_or_hide(button, selector, description, do_toggle) {
+var BALLOT_BOX_NO = "\u2610";
+var BALLOT_BOX_YES = "\u2611";
+
+function _paint_show_or_hide(button, selector, description, occasion) {
     var is_shown = $(button).data('is-shown');
-    var is_hovering = false;   // FIXME:  $(button).is(':hover');   http://stackoverflow.com/a/8981521/673991
+    var is_hovering = occasion == 'mouseenter';
+    var do_toggle = occasion == 'click';
+    // FIXME:  $(button).is(':hover');   http://stackoverflow.com/a/8981521/673991
     if (do_toggle) {
         is_shown = !is_shown;
         $(button).data('is-shown', is_shown);
     }
     if (is_shown) {
-        if (is_hovering) {
-            $(button).text("hide " + description + " words");
-        } else {
-            $(button).text(description + " words shown");
-        }
         $(selector).show();
-    } else {
-        if (is_hovering) {
-            $(button).text("show " + description + " words");
+        $(button).prop('title', "Click to hide " + description + " words.")
+        if (false && is_hovering) {
+            $(button).text(BALLOT_BOX_YES + " hide " + description + " words");
         } else {
-            $(button).text(description + " words hidden");
+            $(button).text(BALLOT_BOX_YES + " " + description);
         }
+    } else {
         $(selector).hide();
+        $(button).prop('title', "Click to show " + description + " words.")
+        if (false && is_hovering) {
+            $(button).text(BALLOT_BOX_NO + " show " + description + " words");
+        } else {
+            $(button).text(BALLOT_BOX_NO + " " + description);
+        }
     }
 }
 
