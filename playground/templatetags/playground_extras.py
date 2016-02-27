@@ -22,6 +22,9 @@ def jbo_diagram(x):
         sbj_txt=sbj.txt
     )
 
+ZERO_WIDTH_SPACE = u'\u200B'
+EMPTY_BLING = ZERO_WIDTH_SPACE
+
 @register.inclusion_tag('icon-diagram-call.html')
 def icon_diagram(vrb, icon_entry):
     lex = icon_entry['lex']
@@ -43,7 +46,7 @@ def icon_diagram(vrb, icon_entry):
         icon_src=icon.txt,
         icon_title=icon_title,
         icon_sup=icon_sup,
-        icon_sub='&nbsp;',
+        icon_sub=EMPTY_BLING,
     )
 
 
