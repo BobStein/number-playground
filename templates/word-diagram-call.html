@@ -31,5 +31,8 @@
         {% for author in jbo_report %}
             {{ author }}
         {% endfor %}
+        {% for vrb, icon_entry in jbo_dict.items %}
+            {% icon_diagram vrb icon_entry %}
+        {% endfor %}
     </div>
 {% endspaceless %}

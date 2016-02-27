@@ -1,5 +1,7 @@
 import datetime
 
+import six
+
 import django.template
 
 
@@ -20,6 +22,38 @@ def jbo_diagram(x):
         sbj_txt=sbj.txt
     )
 
+@register.inclusion_tag('icon-diagram-call.html')
+def icon_diagram(vrb, icon_entry):
+    lex = icon_entry['lex']
+    iconify = lex(u'iconify')
+    icons = lex.find_words(vrb=iconify, obj=vrb)
+    # TODO:  Limit find_words to latest iconify using sql.
+    icon = icons[-1]
+    icon_title = lex(vrb).txt + ": "
+    icon_sup = 0
+    for author_idn, author_entry in icon_entry.iteritems():
+        if isinstance(author_idn, six.string_types):
+            pass
+        else:
+            icon_sup += int(author_entry['num'])
+            icon_title += "\n"
+            icon_title += lex(author_idn).txt + " "
+            icon_title += "-".join([str(int(w.num)) for w in author_entry['history']])
+    return dict(
+        icon_src=icon.txt,
+        icon_title=icon_title,
+        icon_sup=icon_sup,
+        icon_sub='&nbsp;',
+    )
+
+
+# jbo_dict is a dictionary
+# jbo_dict[idn of a qool verb] contains a dictionary, temporarily called icon_entry
+#     [sbj in a qool sentence] contains a dictionary, temporarily called author_entry
+#         ['history'] == list of qool words in chronological order
+#         ['num'] == that author's latest num for that qool verb
+#
+
 @register.inclusion_tag('word-diagram-call.html')
 def word_diagram(word, show_idn=False):
     sbj = word.spawn(word.sbj)
@@ -39,10 +73,22 @@ def word_diagram(word, show_idn=False):
 
     lex = word.lex
     jbo_report = []
+    jbo_dict = {}
     for q in word.jbo:
         author = lex(q.sbj).txt
         jbo_report.append(author)
-
+        try:
+            icon_entry = jbo_dict[q.vrb]
+        except KeyError:
+            icon_entry = {'lex': lex}
+            jbo_dict[q.vrb] = icon_entry
+        try:
+            author_entry = icon_entry[q.sbj]
+        except KeyError:
+            author_entry = {'history': []}
+            icon_entry[q.sbj] = author_entry
+        author_entry['history'].append(q)
+        author_entry['num'] = q.num
     obj_txt = obj.txt
     if obj_txt == '':
         obj_txt = "Word {}".format(render_num(obj.idn))
@@ -64,6 +110,7 @@ def word_diagram(word, show_idn=False):
         obj_idn=obj.idn.qstring(),
         jbo=word.jbo,
         jbo_report=jbo_report,
+        jbo_dict=jbo_dict,
     )
 
 def render_num(num):

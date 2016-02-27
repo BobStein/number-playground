@@ -49,3 +49,21 @@
 .drop-hover {
     background-color: white;
 }
+.icon-bling {
+    display: inline-block;
+    margin: -5px 1px -5px 1px;
+    position: relative;
+    top: -2px;
+}
+.icon-sup,
+.icon-sub {
+    display: block;
+    font-size: 0.6em;
+    text-align: left;
+    margin: 0;
+}
+.icon-sup {
+    margin-bottom: -4px;
+}
+.icon-sub {
+}
