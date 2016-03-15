@@ -13,7 +13,7 @@ def jbo_diagram(x):
     lex = x.lex
     iconify = lex(u'iconify')
     icons = lex.find_words(vrb=iconify, obj=x.vrb)
-    # TODO:  Limit find_words to latest iconify using sql.
+    # TODO:  Limit find_words to latest iconification sentence using sql.
     icon = icons[-1]
     sbj = x.spawn(x.sbj)
     return dict(
