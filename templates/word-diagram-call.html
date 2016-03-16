@@ -24,13 +24,15 @@
             <span class="txt txt-{{ is_a_what }}">{{ txt }}</span>
             {# TODO:  classes for entire define hierarchy, e.g. txt-user txt-agent txt-noun #}
         {% endif %}
-{#        <span class="whn-time-code">{{ yyyy_mmdd_hhmm_ss_mmm }}</span>#}
-        {% for x in jbo %}
-            {% jbo_diagram x %}
-        {% endfor %}
-        {% for author in jbo_report %}
-            {{ author }}
-        {% endfor %}
+        <span class="whn-time-code">{{ yyyy_mmdd_hhmm_ss_mmm }}</span>
+        <span class="qhistory">
+            {% for x in jbo %}
+                {% jbo_diagram x %}
+            {% endfor %}
+            {% for author in jbo_report %}
+                {{ author }}
+            {% endfor %}
+        </span>
         {% for vrb, icon_entry in jbo_dict.items %}
             {% icon_diagram vrb icon_entry %}
         {% endfor %}

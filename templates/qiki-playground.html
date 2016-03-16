@@ -10,17 +10,9 @@
     body,td,h1,h2,h3 {
         font-family: Verdana, sans-serif;
     }
-    input { font-family: Lucida Console, monospace; }
-    button { font-family: Times New Roman, serif; }
-{#    #floater_error, #qstring_error { #}
-{#        font-size: small; #}
-{#    }#}
-{#    #qstring {#}
-{#        width: 100%;#}
-{#    }#}
-{#    #floater {#}
-{#        width: 100%;#}
-{#    }#}
+    input {
+        font-family: Lucida Console, monospace;
+    }
     #error_message {
         background-color: rgb(255,204,204);
     }
@@ -61,6 +53,14 @@
     .vrb-x-num-x-define .vrb-num {
         background-color: transparent;
     }
+    button.show-or-hide {
+        border: none;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+        background-color: transparent;
+        font: small-caption;
+    }
 </style>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/{{ settings.JQUERY_VERSION }}/jquery.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/{{ settings.JQUERYUI_VERSION }}/jquery-ui.min.js"></script>
@@ -78,21 +78,28 @@ $(document).ready(function() {
     qoolbar.html('#qoolbar');
     qoolbar.drop_object('.word');
 
-    show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling");
-    show_or_hide('#show-lex', '.sbj-lex', "lex");
+    show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling", "sentences with a qool verb");
+    show_or_hide('#show-lex', '.sbj-lex', "lex", "sentences with lex as the subject");
+    show_or_hide('#show-qhistory', '.qhistory', "icon history", "icon assignments and revisions");
+    show_or_hide('#show-time-code', '.whn-time-code', "time code", "exactly when sentences were created");
+
+    $('.show-or-hide').on('mousedown', function(event) {
+        event.preventDefault();
+        // THANKS:  Buttons don't get focus, http://stackoverflow.com/a/30949767/673991
+    })
 });
 
-function show_or_hide(button, selector, description) {
-    _paint_show_or_hide(button, selector, description, 'initial');
+function show_or_hide(button, selector, description, elaborate) {
+    _paint_show_or_hide(button, selector, description, elaborate, 'initial');
     $(button).on('click mouseenter mouseleave', function(e) {
-        _paint_show_or_hide(this, selector, description, e.type);
+        _paint_show_or_hide(this, selector, description, elaborate, e.type);
     });
 }
 
 var BALLOT_BOX_NO = "\u2610";
 var BALLOT_BOX_YES = "\u2611";
 
-function _paint_show_or_hide(button, selector, description, occasion) {
+function _paint_show_or_hide(button, selector, description, elaborate, occasion) {
     var is_shown = $(button).data('is-shown');
     var is_hovering = occasion == 'mouseenter';
     var do_toggle = occasion == 'click';
@@ -102,7 +109,7 @@ function _paint_show_or_hide(button, selector, description, occasion) {
     }
     if (is_shown) {
         $(selector).show();
-        $(button).prop('title', "Click to hide " + description + " words.")
+        $(button).prop('title', "Click to hide " + elaborate);
         if (false && is_hovering) {
             $(button).text(BALLOT_BOX_YES + " hide " + description + " words");
         } else {
@@ -110,7 +117,7 @@ function _paint_show_or_hide(button, selector, description, occasion) {
         }
     } else {
         $(selector).hide();
-        $(button).prop('title', "Click to show " + description + " words.")
+        $(button).prop('title', "Click to show " + elaborate);
         if (false && is_hovering) {
             $(button).text(BALLOT_BOX_NO + " show " + description + " words");
         } else {
@@ -123,18 +130,6 @@ function show_error_message(message) {
     $("#error_message").append(document.createTextNode(message));
 }
 
-{#    function qiki_server(action, callback_done, callback_fail) {#}
-{#        $.post(QIKI_AJAX_URL, {#}
-{#            'action': action,#}
-{#            'csrfmiddlewaretoken': $.cookie('csrftoken')#}
-{#        }).done(function(response_body) {#}
-{#            var response_object = jQuery.parseJSON(response_body);#}
-{#            callback_done(response_object);#}
-{#        }).fail(function(jqXHR) {#}
-{#            callback_fail(jqXHR.responseText);#}
-{#        });#}
-{#    }#}
-
 </script>
 </head>
 <body>
@@ -143,8 +138,11 @@ function show_error_message(message) {
 <p>
     Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }}.
 
-    <button id="show-qooling" data-is-shown="false"></button>
-    <button id="show-lex" data-is-shown="false"></button>
+    Show:
+    <button id="show-qooling"   data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-lex"       data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-qhistory"  data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-time-code" data-is-shown="false" class="show-or-hide"></button>
 </p>
 
 <p>
@@ -177,7 +175,9 @@ function show_error_message(message) {
 <div class="word-diagram">
     <ul>
         {% for word in words reversed %}
-            <li class="{{ word.vrb_txt }} {{ word.sbj_txt }} {{ word.vrb_jbo_vrb_qool }}">{% word_diagram word show_idn=True %}</li>
+            <li class="{{ word.vrb_txt }} {{ word.sbj_txt }} {{ word.vrb_jbo_vrb_qool }}">
+                {% word_diagram word show_idn=True %}
+            </li>
         {% endfor %}
     </ul>
 </div>
