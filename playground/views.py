@@ -138,6 +138,7 @@ def qiki_playground(request):
                 'user_name': request.user.username,
                 'user_email': request.user.email,
                 'words': words,
+                'user_idn': DjangoUser(qiki.Number(request.user.id)).idn
             }
         )
 

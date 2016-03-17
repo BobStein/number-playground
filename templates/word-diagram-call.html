@@ -6,7 +6,7 @@
             <span class="idn" title="{{ idn_qstring }}">{{ idn }}.</span>
         {% endif %}
         <span class="sbj-x-{{ sbj_txt }}">
-            <span class="sbj" title="{{ sbj_idn }}">{{ sbj_txt }}</span>
+            <span class="sbj {{ sbj_me }}" title="{{ sbj_idn }}">{{ sbj_txt }}</span>
             <span class="sbj-x-vrb">&rarr;</span>
         </span>
         <span class="vrb-x-num-x-{{ vrb }}">
@@ -34,7 +34,7 @@
             {% endfor %}
         </span>
         {% for vrb, icon_entry in jbo_dict.items %}
-            {% icon_diagram vrb icon_entry %}
+            {% icon_diagram vrb icon_entry user_idn %}
         {% endfor %}
     </div>
 {% endspaceless %}

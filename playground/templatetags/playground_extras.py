@@ -23,30 +23,42 @@ def jbo_diagram(x):
     )
 
 ZERO_WIDTH_SPACE = u'\u200B'
-EMPTY_BLING = ZERO_WIDTH_SPACE
+EMPTY_BLING = ZERO_WIDTH_SPACE   # But nonzero height
 
 @register.inclusion_tag('icon-diagram-call.html')
-def icon_diagram(vrb, icon_entry):
+def icon_diagram(vrb, icon_entry, user_idn):
     lex = icon_entry['lex']
     iconify = lex(u'iconify')
     icons = lex.find_words(vrb=iconify, obj=vrb)
     # TODO:  Limit find_words to latest iconify using sql.
     icon = icons[-1]
     icon_title = lex(vrb).txt + ": "
-    icon_sup = 0
+    everybodys_num = 0
+    my_num = 0
     for author_idn, author_entry in icon_entry.iteritems():
         if isinstance(author_idn, six.string_types):
             pass
         else:
-            icon_sup += int(author_entry['num'])
+            this_guys_num =  int(author_entry['num'])
+            everybodys_num += this_guys_num
+            if author_idn.idn == user_idn:
+                # TODO:  Whoa, why is author_idn a word!?
+                author_bling = "*"
+                my_num = this_guys_num
+            else:
+                author_bling = ""
             icon_title += "\n"
-            icon_title += lex(author_idn).txt + " "
+            icon_title += lex(author_idn).txt
+            icon_title += author_bling
+            icon_title += " "
             icon_title += "-".join([str(int(w.num)) for w in author_entry['history']])
     return dict(
         icon_src=icon.txt,
         icon_title=icon_title,
-        icon_sup=icon_sup,
-        icon_sub=EMPTY_BLING,
+        icon_sup=my_num if my_num != 0 else EMPTY_BLING,
+        icon_sub=everybodys_num if everybodys_num != my_num else EMPTY_BLING,
+        user_idn=user_idn,
+        icon_class='me-qool' if my_num != 0 else 'not-me-qool',
     )
 
 
@@ -58,7 +70,7 @@ def icon_diagram(vrb, icon_entry):
 #
 
 @register.inclusion_tag('word-diagram-call.html')
-def word_diagram(word, show_idn=False):
+def word_diagram(word, show_idn=False, user_idn=None):
     if word.is_defined():
         if word.is_a_verb():
             is_a_what = "verb"
@@ -97,6 +109,7 @@ def word_diagram(word, show_idn=False):
         show_idn=show_idn,
         idn=render_num(word.idn),
         idn_qstring=word.idn.qstring(underscore=1),
+        sbj_me='sbj-me' if user_idn == word.sbj.idn else '',
         sbj_idn=word.sbj.idn.qstring(),
         sbj_txt=word.sbj.txt,
         vrb_idn=word.vrb.idn.qstring(),
@@ -111,6 +124,7 @@ def word_diagram(word, show_idn=False):
         jbo=word.jbo,
         jbo_report=jbo_report,
         jbo_dict=jbo_dict,
+        user_idn=user_idn,
     )
 
 def render_num(num):

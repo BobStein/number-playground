@@ -26,6 +26,9 @@
         border: 1px solid silver;
         background-color: rgb(235,235,235);
     }
+    .sbj.sbj-me {
+        background-color: rgb(245,240,220);
+    }
     .sbj, .obj {
         padding: 0 0.4em 1px 0.4em;
     }
@@ -60,6 +63,9 @@
         cursor: pointer;
         background-color: transparent;
         font: small-caption;
+    }
+    .not-me-qool {
+        opacity: 0.4;
     }
 </style>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/{{ settings.JQUERY_VERSION }}/jquery.min.js"></script>
@@ -136,16 +142,11 @@ function show_error_message(message) {
 <h1>qiki playground</h1>
 
 <p>
-    Ready for a conversation with you {{ user_name }}, {{ user_email }}, id {{ user_id }}.
+    Ready for a conversation with you {{ user_name }},
+    {{ user_email }},
+    id {{ user_id }},
+    idn {{ user_idn }}.
 
-    Show:
-    <button id="show-qooling"   data-is-shown="false" class="show-or-hide"></button>
-    <button id="show-lex"       data-is-shown="false" class="show-or-hide"></button>
-    <button id="show-qhistory"  data-is-shown="false" class="show-or-hide"></button>
-    <button id="show-time-code" data-is-shown="false" class="show-or-hide"></button>
-</p>
-
-<p>
     {% load account %}
 
     {% user_display user %}
@@ -159,6 +160,13 @@ function show_error_message(message) {
     {#    <a href="{% provider_login_url "facebook" %}">Facebook</a>#}
 </p>
 
+<p>
+    Show:
+    <button id="show-qooling"   data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-lex"       data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-qhistory"  data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-time-code" data-is-shown="false" class="show-or-hide"></button>
+</p>
 
 <pre id="report_block"></pre>
 <pre id="error_message"></pre>
@@ -176,7 +184,7 @@ function show_error_message(message) {
     <ul>
         {% for word in words reversed %}
             <li class="{{ word.vrb_txt }} {{ word.sbj_txt }} {{ word.vrb_jbo_vrb_qool }}">
-                {% word_diagram word show_idn=True %}
+                {% word_diagram word show_idn=True user_idn=user_idn %}
             </li>
         {% endfor %}
     </ul>
