@@ -8,6 +8,7 @@ import django.template
 register = django.template.Library()
 
 
+# Obsolete?
 @register.inclusion_tag('jbo-diagram-call.html')
 def jbo_diagram(x):
     lex = x.lex
@@ -58,7 +59,7 @@ def icon_diagram(vrb, icon_entry, user_idn):
         icon_sup=my_num if my_num != 0 else EMPTY_BLING,
         icon_sub=everybodys_num if everybodys_num != my_num else EMPTY_BLING,
         user_idn=user_idn,
-        icon_class='me-qool' if my_num != 0 else 'not-me-qool',
+        icon_class='qool-icon me-nonzero' if my_num != 0 else 'qool-icon',
     )
 
 
@@ -109,7 +110,7 @@ def word_diagram(word, show_idn=False, user_idn=None):
         show_idn=show_idn,
         idn=render_num(word.idn),
         idn_qstring=word.idn.qstring(underscore=1),
-        sbj_me='sbj-me' if user_idn == word.sbj.idn else '',
+        me_sbj='me-sbj' if user_idn == word.sbj.idn else '',
         sbj_idn=word.sbj.idn.qstring(),
         sbj_txt=word.sbj.txt,
         vrb_idn=word.vrb.idn.qstring(),

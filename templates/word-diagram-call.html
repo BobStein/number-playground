@@ -1,12 +1,12 @@
 {% load playground_extras %}
 
 {% spaceless %}
-    <div class="word" data-idn="{{ idn_qstring }}">
+    <div class="word {{ me_sbj }}" data-idn="{{ idn_qstring }}">
         {% if show_idn %}
             <span class="idn" title="{{ idn_qstring }}">{{ idn }}.</span>
         {% endif %}
         <span class="sbj-x-{{ sbj_txt }}">
-            <span class="sbj {{ sbj_me }}" title="{{ sbj_idn }}">{{ sbj_txt }}</span>
+            <span class="sbj" title="{{ sbj_idn }}">{{ sbj_txt }}</span>
             <span class="sbj-x-vrb">&rarr;</span>
         </span>
         <span class="vrb-x-num-x-{{ vrb }}">
