@@ -30,6 +30,5 @@ urlpatterns = [
     # url(r'^accounts/logout/$', auth_views.logout),
     # url('', include('social.apps.django_app.urls', namespace='social')),
 
-    # url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/', include(allauth.urls)),
 ] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
