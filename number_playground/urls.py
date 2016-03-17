@@ -1,5 +1,5 @@
 # from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 # from django.conf.urls.static import static
 from django.contrib import admin
 # from django.contrib.auth import views as auth_views
@@ -17,7 +17,7 @@ import allauth.urls
 #  django.conf.urls.url() instances instead."
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     # url(r'^$', 'number_playground.views.home', name='home'),
 
     url(r'^admin/', include(admin.site.urls)),
@@ -32,4 +32,4 @@ urlpatterns = patterns('',
 
     # url(r'^accounts/', include('allauth.urls')),
     url(r'^accounts/', include(allauth.urls)),
-) # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
