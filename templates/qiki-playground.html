@@ -75,6 +75,7 @@
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/{{ settings.JQUERYUI_VERSION }}/jquery-ui.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
 <script src="{% static 'qoolbar.js' %}"></script>
+<script src="{% static 'jquery.hotkeys.js' %}"></script>
 <script type="text/javascript">
 'use strict';
 
@@ -96,6 +97,8 @@ $(document).ready(function() {
         event.preventDefault();
         // THANKS:  Buttons don't get focus, http://stackoverflow.com/a/30949767/673991
     })
+
+    qoolbar.click_to_edit();
 });
 
 function show_or_hide(button, selector, description, elaborate) {

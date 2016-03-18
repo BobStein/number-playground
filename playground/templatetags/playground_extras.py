@@ -59,7 +59,8 @@ def icon_diagram(vrb, icon_entry, user_idn):
         icon_sup=my_num if my_num != 0 else EMPTY_BLING,
         icon_sub=everybodys_num if everybodys_num != my_num else EMPTY_BLING,
         user_idn=user_idn,
-        icon_class='qool-icon me-nonzero' if my_num != 0 else 'qool-icon',
+        me_nonzero='me-nonzero' if my_num != 0 else '',
+        data_num=my_num,
     )
 
 

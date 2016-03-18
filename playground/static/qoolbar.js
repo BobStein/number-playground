@@ -131,6 +131,67 @@
         $(document.body).css('background-color', 'rgb(215,215,215)');
     };
 
+    qoolbar._is_anybody_editing = false;
+
+    qoolbar.click_to_edit = function(selector) {
+        if (selector === undefined) {
+            selector = '.qool-icon';
+        }
+        $(selector).on('click', function (event) {
+            var was_already_editing = $(this).hasClass('qool-editing');
+            qoolbar._end_all_editing();
+            if (!was_already_editing) {
+                $(this).addClass('qool-editing');
+                qoolbar._is_anybody_editing = true;
+                var old_num = $(this).data('num');
+                var input = $('<input/>', {
+                    type: 'text',
+                    class: 'qool-icon-entry',
+                    value: old_num
+                });
+                $(this).append(input);
+                input.select();
+            }
+            event.stopPropagation();
+        });
+        $(selector).on('click', '.qool-icon-entry', function (event) {
+            // Clicking the input field itself should not cancel editing.
+            // THANKS:  For nested click ignoring, http://stackoverflow.com/a/2364639/673991
+            event.stopPropagation();
+        });
+
+        $('body').on('keydown', '.qool-icon-entry', 'return', function(event) {
+            event.preventDefault();
+            var new_num = $(this).val();
+            alert(new_num);
+            qoolbar._end_all_editing();
+        });
+
+        $('body').on('keydown', '.qool-icon-entry', 'esc', function(event) {
+            event.preventDefault();
+            qoolbar._end_all_editing();
+        });
+
+        $(document).on('blur', '.qool-icon-entry', function() {
+            // THANKS:  For event on dynamic selector, http://stackoverflow.com/a/1207393/673991
+            if (qoolbar) {
+                qoolbar._end_all_editing();
+            }
+        });
+    };
+
+    qoolbar._qool_icon_entry_keypress = function() {
+
+    };
+
+    qoolbar._end_all_editing = function() {
+        if (qoolbar._is_anybody_editing) {
+            qoolbar._is_anybody_editing = false;
+            $('.qool-editing').removeClass('qool-editing');
+            $('.qool-icon-entry').remove();
+        }
+    };
+
 }(window.qoolbar = window.qoolbar || {}, jQuery));
 // THANKS:  http://www.adequatelygood.com/JavaScript-Module-Pattern-In-Depth.html
 // THANKS:  http://appendto.com/2010/10/how-good-c-habits-can-encourage-bad-javascript-habits-part-1/
