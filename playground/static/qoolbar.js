@@ -60,19 +60,19 @@
                 qoolbar.post(
                     'sentence',
                     {
-                        vrb: verb_name,
-                        obj: destination_idn,
-                        num_add: '0q82',
+                        vrb_txt: verb_name,
+                        obj_idn: destination_idn,
+                        num_add: '1',
                         txt: ''
                     },
                     function(response) {
                         if (response.is_valid) {
-                            // alert(response.report);
                             window.location.reload(true);
                         } else {
                             alert(response.error_message);
                         }
-                    })
+                    }
+                );
             }
         });
     };
@@ -131,15 +131,22 @@
         $(document.body).css('background-color', 'rgb(215,215,215)');
     };
 
-    qoolbar._is_anybody_editing = false;
-
     qoolbar.click_to_edit = function(selector) {
         if (selector === undefined) {
             selector = '.qool-icon';
         }
-        $(selector).on('click', function (event) {
+        $(selector).on('mousedown', function () {
             var was_already_editing = $(this).hasClass('qool-editing');
-            qoolbar._end_all_editing();
+            $(this).data('was_already_editing', was_already_editing);
+        });
+        // Blur, if it happens, will come between mousedown and click events.
+        // THANKS:  http://stackoverflow.com/a/10653160/673991
+        $(selector).on('click', function (event) {
+            var was_already_editing = $(this).data('was_already_editing');
+            $(this).removeData('was_already_editing');
+            if (was_already_editing === undefined) {
+                console.warn("Qool icon click without a preceding mousedown?");
+            }
             if (!was_already_editing) {
                 $(this).addClass('qool-editing');
                 qoolbar._is_anybody_editing = true;
@@ -160,13 +167,32 @@
             event.stopPropagation();
         });
 
+        //noinspection JSJQueryEfficiency
         $('body').on('keydown', '.qool-icon-entry', 'return', function(event) {
             event.preventDefault();
             var new_num = $(this).val();
-            alert(new_num);
-            qoolbar._end_all_editing();
+            var vrb_idn = $(this).closest(selector).data('vrb-idn');
+            var obj_idn = $(this).closest('.word').data('idn');
+            qoolbar.post(
+                'sentence',
+                {
+                    vrb_idn: vrb_idn,
+                    obj_idn: obj_idn,
+                    num: new_num,   // This could be a q-string!  Dangerous??
+                    txt: ''   // TODO:  Room for a comment?
+                },
+                function(response) {
+                    if (response.is_valid) {
+                        qoolbar._end_all_editing();
+                        window.location.reload(true);
+                    } else {
+                        console.warn("Error editing num: " + response.error_message);
+                    }
+                }
+            );
         });
 
+        //noinspection JSJQueryEfficiency
         $('body').on('keydown', '.qool-icon-entry', 'esc', function(event) {
             event.preventDefault();
             qoolbar._end_all_editing();
@@ -184,9 +210,19 @@
 
     };
 
+    qoolbar._is_anybody_editing = false;
+
     qoolbar._end_all_editing = function() {
         if (qoolbar._is_anybody_editing) {
             qoolbar._is_anybody_editing = false;
+            // This _is_anybody_editing flag presumably makes _end_all_editing() less of a drag.
+            // Otherwise there might be frequent expensive jQuery removing.
+            // But that's when it used to be called every document click.
+            // Now with a saner on-blur dynamically filtered by .qool-icon-entry,
+            // it would get called a lot less often.
+            // So it's possible _end_all_editing() should be shortened
+            // to just the two remove calls.
+            // Sheesh yes, I think this flag is always true when this function is called!
             $('.qool-editing').removeClass('qool-editing');
             $('.qool-icon-entry').remove();
         }

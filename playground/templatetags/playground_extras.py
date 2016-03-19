@@ -61,11 +61,12 @@ def icon_diagram(vrb, icon_entry, user_idn):
         user_idn=user_idn,
         me_nonzero='me-nonzero' if my_num != 0 else '',
         data_num=my_num,
+        vrb_idn=vrb.idn,
     )
 
 
 # jbo_dict is a dictionary
-# jbo_dict[idn of a qool verb] contains a dictionary, temporarily called icon_entry
+# jbo_dict[a qool verb -- the word itself] contains a dictionary, temporarily called icon_entry
 #     [sbj in a qool sentence] contains a dictionary, temporarily called author_entry
 #         ['history'] == list of qool words in chronological order
 #         ['num'] == that author's latest num for that qool verb
@@ -108,12 +109,12 @@ def word_diagram(word, show_idn=False, user_idn=None):
         obj_txt = "Word {}".format(render_num(word.obj.idn))
         # TODO:  This will have to be smarter.  Comment objects shouldn't be identified by txt alone.  Arrows??
     return dict(
+        word=word,
         show_idn=show_idn,
         idn=render_num(word.idn),
         idn_qstring=word.idn.qstring(underscore=1),
         me_sbj='me-sbj' if user_idn == word.sbj.idn else '',
         sbj_idn=word.sbj.idn.qstring(),
-        sbj_txt=word.sbj.txt,
         vrb_idn=word.vrb.idn.qstring(),
         vrb_txt=word.vrb.txt,
         obj_idn=word.obj.idn.qstring(),

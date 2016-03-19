@@ -5,8 +5,8 @@
         {% if show_idn %}
             <span class="idn" title="{{ idn_qstring }}">{{ idn }}.</span>
         {% endif %}
-        <span class="sbj-x-{{ sbj_txt }}">
-            <span class="sbj" title="{{ sbj_idn }}">{{ sbj_txt }}</span>
+        <span class="sbj-x-{{ word.sbj.txt }}">
+            <span class="sbj" title="{{ sbj_idn }}">{{ word.sbj.txt }}</span>
             <span class="sbj-x-vrb">&rarr;</span>
         </span>
         <span class="vrb-x-num-x-{{ vrb }}">

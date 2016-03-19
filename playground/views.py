@@ -122,8 +122,6 @@ def qiki_playground(request):
         qool_idns = {w.obj for w in qool_declarations}
         words = lex.find_words(jbo_vrb=qool_idns)
         for word in words:
-            word.sbj_txt = u'sbj-' + lex(word.sbj).txt
-            word.vrb_txt = u'vrb-' + lex(word.vrb).txt
             word.vrb_jbo_vrb_qool = u'vrb-jbo-vrb-qool' if word.vrb in qool_idns else u''
             # TODO:  Obviate the above tedium by "soft" words
             # e.g. w=Word(idn) doesn't populate (harden, meaning read its sentence from the database)
@@ -184,10 +182,11 @@ class QikiActionForm(forms.Form):
 
 
 class QikiActionSentenceForm(QikiActionForm):
-    vrb = forms.CharField(required=True)
-    obj = forms.CharField(required=True)
-    num = forms.CharField(required=False, initial='0q82')
-    num_add = forms.CharField(required=False, initial='0q80')
+    vrb_idn = forms.CharField(required=False)
+    vrb_txt = forms.CharField(required=False)
+    obj_idn = forms.CharField(required=True)
+    num = forms.CharField(required=False, initial='1')
+    num_add = forms.CharField(required=False, initial='0')
     txt = forms.CharField(required=False)
 
 @login_required
@@ -242,32 +241,46 @@ def qiki_ajax(request):
                     me = DjangoUser(qiki.Number(request.user.id))
                     lex = get_lex()
                     if sentence_form.is_valid():
-                        try:
-                            vrb_idn = lex(sentence_form.cleaned_data['vrb']).idn
-                        except qiki.Number.ConstructorTypeError:
-                            vrb_idn = qiki.Number(sentence_form.cleaned_data['vrb'])
-                        obj_idn = qiki.Number(sentence_form.cleaned_data['obj']) # e.g. '0x82_2A'
 
-                        num_field = sentence_form.cleaned_data.get('num', None)
-                        num = None if num_field == '' else qiki.Number(num_field)
+                        vrb_txt = sentence_form.cleaned_data['vrb_txt']
+                        vrb_idn = sentence_form.cleaned_data['vrb_idn']
+                        if vrb_idn != '':
+                            try:
+                                vrb = lex(qiki.Number.from_qstring(vrb_idn))
+                            except ValueError:
+                                return invalid_response("Verb idn {} is not valid.".format(vrb_idn))
+                            if not vrb.exists():
+                                return invalid_response("Verb idn {} does not exist".format(vrb_idn))
+                        elif vrb_txt != '':
+                            vrb = lex(vrb_txt)
+                            if not vrb.exists():
+                                return invalid_response("Verb txt '{}' does not exist".format(vrb_txt))
+                        else:
+                            return invalid_response("Neither verb idn nor txt specified.")
+                        if not vrb.is_a_verb():
+                            return invalid_response("Verb {} is not a verb.".format(repr(vrb)))
 
+                        obj_idn = qiki.Number(sentence_form.cleaned_data['obj_idn'])
+
+                        num_field     = sentence_form.cleaned_data.get('num',     None)
                         num_add_field = sentence_form.cleaned_data.get('num_add', None)
-                        num_add = None if num_add_field == '' else qiki.Number(num_add_field)
+                        try:
+                            num     = None if num_field     == '' else qiki.Number(num_field)
+                            num_add = None if num_add_field == '' else qiki.Number(num_add_field)
+                        except qiki.Number.ConstructorValueError as e:
+                            return invalid_response(
+                                "Invalid num ({num}) or num_add ({num_add}):  {message}.".format(
+                                    num=num_field,
+                                    num_add=num_add_field,
+                                    message=str(e),
+                                )
+                            )
 
                         txt = sentence_form.cleaned_data.get('txt', '')
 
-                        vrb=lex(vrb_idn)
-                        if not vrb.exists:
-                            return invalid_response("Verb '{}' does not exist.".format(
-                                sentence_form.cleaned_data['vrb']))
-                        if not vrb.is_a_verb():
-                            return invalid_response("Word '{}' is not a verb.".format(
-                                sentence_form.cleaned_data['vrb']))
-
                         obj=lex(obj_idn)
-                        if not obj.exists:
-                            return invalid_response("Object '{}' does not exist.".format(
-                                sentence_form.cleaned_data['obj']))
+                        if not obj.exists():
+                            return invalid_response("Object idn {} does not exist.".format(obj_idn))
 
                         word = lex.sentence(
                             sbj=me,
@@ -281,7 +294,7 @@ def qiki_ajax(request):
                         return valid_responses(dict(
                             report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
                                 sbj=me.idn.qstring(),
-                                vrb=vrb_idn.qstring(),
+                                vrb=vrb.idn.qstring(),
                                 obj=obj_idn.qstring(),
                                 num=word.num.qstring(),
                                 txt=txt,

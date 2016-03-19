@@ -86,7 +86,7 @@ $(document).ready(function() {
     $('#csrftoken').val($.cookie('csrftoken'));
     $('#qoolbar').text("Loading qoolbar...");
     qoolbar.html('#qoolbar');
-    qoolbar.drop_object('.word');
+    qoolbar.drop_object('.word');   // Each of these elements must have a data-idn property.
 
     show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling", "sentences with a qool verb");
     show_or_hide('#show-lex', '.sbj-lex', "lex", "sentences with lex as the subject");
@@ -189,7 +189,7 @@ function show_error_message(message) {
 <div class="word-diagram">
     <ul>
         {% for word in words reversed %}
-            <li class="{{ word.vrb_txt }} {{ word.sbj_txt }} {{ word.vrb_jbo_vrb_qool }}">
+            <li class="sbj-{{ word.sbj.txt }} {{ word.vrb_jbo_vrb_qool }}">
                 {% word_diagram word show_idn=True user_idn=user_idn %}
             </li>
         {% endfor %}
