@@ -40,7 +40,7 @@ def icon_diagram(vrb, icon_entry, user_idn):
         if isinstance(author_idn, six.string_types):
             pass
         else:
-            this_guys_num =  int(author_entry['num'])
+            this_guys_num =  int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4)
             everybodys_num += this_guys_num
             if author_idn.idn == user_idn:
                 # TODO:  Whoa, why is author_idn a word!?
