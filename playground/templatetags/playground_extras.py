@@ -34,18 +34,18 @@ def icon_diagram(vrb, icon_entry, user_idn):
     # TODO:  Limit find_words to latest iconify using sql.
     icon = icons[-1]
     icon_title = lex(vrb).txt + ": "
-    everybodys_num = 0
-    my_num = 0
+    everybody_num = 0
+    me_num = 0
     for author_idn, author_entry in icon_entry.iteritems():
         if isinstance(author_idn, six.string_types):
             pass
         else:
-            this_guys_num =  int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4)
-            everybodys_num += this_guys_num
+            author_num = int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4) e.g. '4K'
+            everybody_num += author_num
             if author_idn.idn == user_idn:
                 # TODO:  Whoa, why is author_idn a word!?
-                author_bling = "*"
-                my_num = this_guys_num
+                author_bling = " (me)"
+                me_num = author_num
             else:
                 author_bling = ""
             icon_title += "\n"
@@ -53,14 +53,16 @@ def icon_diagram(vrb, icon_entry, user_idn):
             icon_title += author_bling
             icon_title += " "
             icon_title += "-".join([str(int(w.num)) for w in author_entry['history']])
+    # TODO:  Make the icon disappear entirely if me_num == everybody_num == 0 ?
+    # e.g. if someone applied a qool icon and then deleted it.
     return dict(
         icon_src=icon.txt,
         icon_title=icon_title,
-        icon_sup=my_num if my_num != 0 else EMPTY_BLING,
-        icon_sub=everybodys_num if everybodys_num != my_num else EMPTY_BLING,
+        icon_sup=me_num if me_num not in (0,1) else EMPTY_BLING,
+        icon_sub=everybody_num if everybody_num != me_num else EMPTY_BLING,
         user_idn=user_idn,
-        me_nonzero='me-nonzero' if my_num != 0 else '',
-        data_num=my_num,
+        me_nonzero='me-nonzero' if me_num != 0 else '',
+        data_num=me_num,
         vrb_idn=vrb.idn,
     )
 
