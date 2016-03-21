@@ -80,8 +80,12 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
 
         icon_title += "-".join(rating_strings(author_entry['history']))
 
-    # TODO:  Make the icon disappear entirely if me_num == everybody_num == 0 ?
+    if me_num == 0 and everybody_num == 0:
+        return dict()
+
+    # DONE:  Make the icon disappear entirely if me_num == everybody_num == 0 ?
     # e.g. if someone applied a qool icon and then deleted it.
+
     return dict(
         icon_src=icon.txt,
         icon_title=icon_title,
