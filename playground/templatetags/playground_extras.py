@@ -4,11 +4,17 @@ import six
 
 import django.template
 
+import qiki
+
 
 register = django.template.Library()
 
 
-# Obsolete?
+ZERO_WIDTH_SPACE = u'\u200B'
+EMPTY_BLING = ZERO_WIDTH_SPACE   # But nonzero height
+
+
+# Obsolete?  Only used when "icon history" is enabled in qiki playground
 @register.inclusion_tag('jbo-diagram-call.html')
 def jbo_diagram(x):
     lex = x.lex
@@ -23,36 +29,57 @@ def jbo_diagram(x):
         sbj_txt=sbj.txt
     )
 
-ZERO_WIDTH_SPACE = u'\u200B'
-EMPTY_BLING = ZERO_WIDTH_SPACE   # But nonzero height
 
 @register.inclusion_tag('icon-diagram-call.html')
-def icon_diagram(vrb, icon_entry, user_idn):
-    lex = icon_entry['lex']
+def icon_diagram(qoolified_verb, icon_entry, user_idn):
+    """
+    Draw an icon for a qool verb to appear next to its target.
+    :param qoolified_verb: the verb that has been declared qool somewhere
+           e.g. like=lex.verb(u'like'); lex.qool(like)
+    :param icon_entry:  dictionary of info on usage of this verb, keyed by author.
+    :param icon_entry[author]:  one author's involvement with this qool verb.
+    :param icon_entry[author]['num']:  The author's latest magnitude for this verb.
+    :param icon_entry[author]['history']:  List of words by this author on this qool verb.
+    :param user_idn:  logged in (viewing) user
+    :return:
+    """
+    assert isinstance(qoolified_verb, qiki.Word)
+    lex = qoolified_verb.lex
     iconify = lex(u'iconify')
-    icons = lex.find_words(vrb=iconify, obj=vrb)
-    # TODO:  Limit find_words to latest iconify using sql.
-    icon = icons[-1]
-    icon_title = lex(vrb).txt + ": "
+    icon = lex.find_last(vrb=iconify, obj=qoolified_verb)
+    # TODO:  icon = qoolified_verb.jbo(vrb=iconify)[-1]
+    # TODO:  If NotFouind (i.e. not iconified) display some kind of gussied up name instead?
+
+    icon_title = qoolified_verb.txt + ": "
     everybody_num = 0
     me_num = 0
-    for author_idn, author_entry in icon_entry.iteritems():
-        if isinstance(author_idn, six.string_types):
-            pass
+    for author, author_entry in icon_entry.iteritems():
+        assert isinstance(author, qiki.Word)
+        assert isinstance(author_entry, dict)
+        assert isinstance(author_entry['num'], qiki.Number)
+        assert isinstance(author_entry['history'], list)
+        author_num = int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4) e.g. '4K'
+        everybody_num += author_num
+        if author.idn == user_idn:
+            author_bling = " (me)"
+            me_num = author_num
         else:
-            author_num = int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4) e.g. '4K'
-            everybody_num += author_num
-            if author_idn.idn == user_idn:
-                # TODO:  Whoa, why is author_idn a word!?
-                author_bling = " (me)"
-                me_num = author_num
-            else:
-                author_bling = ""
-            icon_title += "\n"
-            icon_title += lex(author_idn).txt
-            icon_title += author_bling
-            icon_title += " "
-            icon_title += "-".join([str(int(w.num)) for w in author_entry['history']])
+            author_bling = ""
+        icon_title += "\n"
+        icon_title += author.txt
+        icon_title += author_bling
+        icon_title += " "
+
+        def rating_strings(uses):
+            for use in uses:
+                assert isinstance(use, qiki.Word)
+                assert use.sbj == author
+                assert use.vrb == qoolified_verb
+                #      use.obj == the object of the qoolified verb, but icon_diagram is ignorant of that object
+                yield str(int(use.num))
+
+        icon_title += "-".join(rating_strings(author_entry['history']))
+
     # TODO:  Make the icon disappear entirely if me_num == everybody_num == 0 ?
     # e.g. if someone applied a qool icon and then deleted it.
     return dict(
@@ -63,7 +90,7 @@ def icon_diagram(vrb, icon_entry, user_idn):
         user_idn=user_idn,
         me_nonzero='me-nonzero' if me_num != 0 else '',
         data_num=me_num,
-        vrb_idn=vrb.idn,
+        vrb_idn=qoolified_verb.idn,
     )
 
 
@@ -72,7 +99,6 @@ def icon_diagram(vrb, icon_entry, user_idn):
 #     [sbj in a qool sentence] contains a dictionary, temporarily called author_entry
 #         ['history'] == list of qool words in chronological order
 #         ['num'] == that author's latest num for that qool verb
-#
 
 @register.inclusion_tag('word-diagram-call.html')
 def word_diagram(word, show_idn=False, user_idn=None):
@@ -88,16 +114,15 @@ def word_diagram(word, show_idn=False, user_idn=None):
     datetime_object = datetime.datetime.fromtimestamp(float(word.whn))
     time_code = datetime_object.strftime("%Y.%m%d.%H%M.%S.%f")[:-3]
 
-    lex = word.lex
     jbo_report = []
     jbo_dict = {}
     for q in word.jbo:
-        author = lex(q.sbj).txt
+        author = q.sbj.txt
         jbo_report.append(author)
         try:
             icon_entry = jbo_dict[q.vrb]
         except KeyError:
-            icon_entry = {'lex': lex}
+            icon_entry = dict()
             jbo_dict[q.vrb] = icon_entry
         try:
             author_entry = icon_entry[q.sbj]
