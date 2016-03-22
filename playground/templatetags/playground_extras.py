@@ -96,14 +96,29 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     )
 
 
-# jbo_dict is a dictionary
-# jbo_dict[qool verb] contains a dictionary, temporarily called icon_entry
-#     [author] contains a dictionary, temporarily called author_entry
-#         ['history'] == list of qool words in chronological order
-#         ['num'] == that author's latest num for that qool verb
 
 @register.inclusion_tag('word-diagram-call.html')
 def word_diagram(word, show_idn=False, user_idn=None):
+    """Render a word with its qool icon ratings.
+
+    The word is expected to come out of lex.find_words() with the jbo_vrb set to a list of qool verbs.
+    So the word has the wild and crazy jbo attribute.
+
+    jbo_dict is a dictionary
+    ------------------------
+    It pre-processes the jbo attribute of the word.
+    Tt breaks down the jbo container into a 2D dictionary
+        first by icon (verb) and then by author (subject)
+    The keys of the dictionary are themselves words
+        the qool verb for the icon, DjangoUser() for the author.
+
+    jbo_dict[icon]                     contains a dictionary, temporarily called icon_entry
+    jbo_dict[icon][author]             contains a dictionary, temporarily called author_entry
+    jbo_dict[icon][author]['history']  list of qool words in chronological order
+                                       so this is a subset of jbo
+    jbo_dict[icon][author]['num']      that author's latest num for that qool verb
+                                       so same as jbo_dict[qool verb]['history'][-1].num
+    """
     if word.is_defined():
         if word.is_a_verb():
             is_a_what = "verb"
@@ -125,12 +140,12 @@ def word_diagram(word, show_idn=False, user_idn=None):
             icon_entry = jbo_dict[q.vrb]
         except KeyError:
             icon_entry = dict()
-            jbo_dict[q.vrb] = icon_entry
+            jbo_dict[q.vrb.inchoate_copy()] = icon_entry
         try:
             author_entry = icon_entry[q.sbj]
         except KeyError:
             author_entry = {'history': []}
-            icon_entry[q.sbj] = author_entry
+            icon_entry[q.sbj.inchoate_copy()] = author_entry
         author_entry['history'].append(q)
         author_entry['num'] = q.num
     obj_txt = word.obj.txt
