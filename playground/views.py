@@ -295,6 +295,7 @@ def qiki_ajax(request):
                             txt=txt,
                         )
                         # return django.shortcuts.redirect('/qiki-playground/')
+                        jbo = lex.find_words(idn=obj, jbo_vrb=vrb)[0].jbo
                         return valid_responses(dict(
                             report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
                                 sbj=me.idn.qstring(),
@@ -310,7 +311,7 @@ def qiki_ajax(request):
                                     {me: {'num': qiki.Number(1), 'history': []}},
                                     me.idn
                                 )
-                            ),
+                            ) + repr(jbo),
                             # icon_html=repr(templatetags.playground_extras.icon_diagram(
                             #     vrb,
                             #     {},
