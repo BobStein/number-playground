@@ -324,6 +324,8 @@ def qiki_ajax(request):
                             #         user_idn=me.idn,
                             #     )
                             # ),
+
+                            # SEE:  Inclusion tag rendering, http://stackoverflow.com/questions/3513990/django-rendering-inclusion-tag-from-a-view
                         ))
                     else:
                         actual_keys = list(sentence_form.cleaned_data.keys())
