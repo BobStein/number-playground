@@ -86,7 +86,7 @@ $(document).ready(function() {
     $('#csrftoken').val($.cookie('csrftoken'));
     $('#qoolbar').text("Loading qoolbar...");
     qoolbar.html('#qoolbar');
-    qoolbar.drop_object('.word');   // Each of these elements must have a data-idn property.
+    qoolbar.target('.word');   // Each of these elements must have a data-idn attribute.
 
     show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling", "sentences with a qool verb");
     show_or_hide('#show-lex', '.sbj-lex', "lex", "sentences with lex as the subject");

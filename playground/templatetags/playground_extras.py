@@ -44,6 +44,8 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     :return:
     """
     assert isinstance(qoolified_verb, qiki.Word)
+    assert isinstance(icon_entry, dict)
+    assert isinstance(user_idn, qiki.Number)
     lex = qoolified_verb.lex
     iconify = lex(u'iconify')
     icon = lex.find_last(vrb=iconify, obj=qoolified_verb)
@@ -83,15 +85,11 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     if me_num == 0 and everybody_num == 0:
         return dict()
 
-    # DONE:  Make the icon disappear entirely if me_num == everybody_num == 0 ?
-    # e.g. if someone applied a qool icon and then deleted it.
-
     return dict(
         icon_src=icon.txt,
         icon_title=icon_title,
         icon_sup=me_num if me_num not in (0,1) else EMPTY_BLING,
         icon_sub=everybody_num if everybody_num != me_num else EMPTY_BLING,
-        user_idn=user_idn,
         me_nonzero='me-nonzero' if me_num != 0 else '',
         data_num=me_num,
         vrb_idn=qoolified_verb.idn,
@@ -99,8 +97,8 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
 
 
 # jbo_dict is a dictionary
-# jbo_dict[a qool verb -- the word itself] contains a dictionary, temporarily called icon_entry
-#     [sbj in a qool sentence] contains a dictionary, temporarily called author_entry
+# jbo_dict[qool verb] contains a dictionary, temporarily called icon_entry
+#     [author] contains a dictionary, temporarily called author_entry
 #         ['history'] == list of qool words in chronological order
 #         ['num'] == that author's latest num for that qool verb
 

@@ -38,7 +38,9 @@
         );
     };
 
-    qoolbar.drop_object = function(selector) {
+    qoolbar.target = function(selector) {
+        // Identify the elements that, if we drop a qool icon on them, become the object of a new qool sentence.
+        // Each must have a data-idn attribute.
         var objects = $(selector);
         var objects_without_idn = objects.filter(':not([data-idn])');
         if (objects_without_idn.length > 0) {
@@ -183,8 +185,9 @@
                 },
                 function(response) {
                     if (response.is_valid) {
+                        console.info("Just in: " + response.icon_html)
                         qoolbar._end_all_editing();
-                        window.location.reload(true);
+                        //window.location.reload(true);
                     } else {
                         console.warn("Error editing num: " + response.error_message);
                     }

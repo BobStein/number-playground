@@ -7,11 +7,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseNotFound
 import django.shortcuts
+from django.template.loader import render_to_string
+from django.template import RequestContext
 from django.views.decorators.csrf import ensure_csrf_cookie
 import logging
 logger = logging.getLogger(__name__)
 logger.info("{now}".format(now=datetime.datetime.now().strftime("%Y.%m%d.%H%M.%S")))
 # FIXME:  Timestamp in the log.  (effing django)
+
+import templatetags.playground_extras
 
 import qiki
 try:
@@ -298,7 +302,28 @@ def qiki_ajax(request):
                                 obj=obj_idn.qstring(),
                                 num=word.num.qstring(),
                                 txt=txt,
-                            )
+                            ),
+                            icon_html=render_to_string(
+                                'icon-diagram-call.html',
+                                templatetags.playground_extras.icon_diagram(
+                                    vrb,
+                                    {me: {'num': qiki.Number(1), 'history': []}},
+                                    me.idn
+                                )
+                            ),
+                            # icon_html=repr(templatetags.playground_extras.icon_diagram(
+                            #     vrb,
+                            #     {},
+                            #     qiki.Number()
+                            # )),
+                            # icon_html=render_to_string(
+                            #     'icon-rebuilt.html',
+                            #     dict(
+                            #         vrb=vrb,
+                            #         icon_entry={me: {'num': qiki.Number(1), 'history': []}},
+                            #         user_idn=me.idn,
+                            #     )
+                            # ),
                         ))
                     else:
                         actual_keys = list(sentence_form.cleaned_data.keys())
