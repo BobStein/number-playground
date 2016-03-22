@@ -3,7 +3,7 @@
 {% spaceless %}
     <div class="word {{ me_sbj }}" data-idn="{{ idn_qstring }}">
         {% if show_idn %}
-            <span class="idn" title="{{ idn_qstring }}">{{ idn }}.</span>
+            <span class="idn" title="{{ idn_qstring }}">{{ idn_rendered }}.</span>
         {% endif %}
         <span class="sbj-x-{{ word.sbj.txt }}">
             <span class="sbj" title="{{ sbj_idn }}">{{ word.sbj.txt }}</span>
@@ -14,7 +14,7 @@
                 <span class="vrb vrb-{{ vrb_txt }}" title="{{ vrb_idn }}">{{ vrb_txt }}</span>
                 {% if num != "1.0" and num != "1" %}
                     <span class="vrb-x-num">&times;</span>
-                    <span class="num" title="{{ num_qstring }}">{{ num }}</span>
+                    <span class="num" title="{{ num_qstring }}">{{ num_rendered }}</span>
                 {% endif %}
             </span>
             <span class="vrb-x-obj">&rarr;</span>
@@ -29,9 +29,9 @@
             {% for x in jbo %}
                 {% jbo_diagram x %}
             {% endfor %}
-            {% for author in jbo_report %}
-                {{ author }}
-            {% endfor %}
+{#            {% for author in jbo_report %}#}
+{#                {{ author }}#}
+{#            {% endfor %}#}
         </span>
         {% for vrb, icon_entry in jbo_dict.items %}
             {% icon_diagram vrb icon_entry user_idn %}

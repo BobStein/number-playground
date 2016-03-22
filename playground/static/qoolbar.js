@@ -41,17 +41,17 @@
     qoolbar.target = function(selector) {
         // Identify the elements that, if we drop a qool icon on them, become the object of a new qool sentence.
         // Each must have a data-idn attribute.
-        var objects = $(selector);
-        var objects_without_idn = objects.filter(':not([data-idn])');
+        var $objects = $(selector);
+        var objects_without_idn = $objects.filter(':not([data-idn])');
         if (objects_without_idn.length > 0) {
             console.error(
                 "Drop objects need a data-idn attribute. " +
                 objects_without_idn.length + " out of " +
-                objects.length + " are missing one."
+                $objects.length + " are missing one."
             );
         }
         //noinspection JSUnusedGlobalSymbols
-        objects.droppable({
+        $objects.droppable({
             accept: ".qool-verb",
             hoverClass: 'drop-hover',
             drop: function(event, ui) {
@@ -59,6 +59,7 @@
                 var $destination = $(event.target);
                 var verb_name = $source.data('verb');
                 var destination_idn = $destination.data('idn');
+                // TODO:  some work ... var $qool_icon = $destination.find('.qool-icon').filter('[data-vrb-idn="' + vrb_idn + '"]');
                 qoolbar.post(
                     'sentence',
                     {
@@ -134,16 +135,17 @@
     };
 
     qoolbar.click_to_edit = function(selector) {
-        if (selector === undefined) {
-            selector = '.qool-icon';
-        }
-        $(selector).on('mousedown', function () {
+
+        // TODO:  Can we really rely on $(.word) to contain the $(.qool-icon)s?  Seriously not D.R.Y.
+        $('.word').on('mousedown', '.qool-icon', function () {
             var was_already_editing = $(this).hasClass('qool-editing');
             $(this).data('was_already_editing', was_already_editing);
         });
+
         // Blur, if it happens, will come between mousedown and click events.
         // THANKS:  http://stackoverflow.com/a/10653160/673991
-        $(selector).on('click', function (event) {
+
+        $('.word').on('click', '.qool-icon', function (event) {
             var was_already_editing = $(this).data('was_already_editing');
             $(this).removeData('was_already_editing');
             if (was_already_editing === undefined) {
@@ -163,7 +165,8 @@
             }
             event.stopPropagation();
         });
-        $(selector).on('click', '.qool-icon-entry', function (event) {
+
+        $('.word').on('click', '.qool-icon-entry', function (event) {
             // Clicking the input field itself should not cancel editing.
             // THANKS:  For nested click ignoring, http://stackoverflow.com/a/2364639/673991
             event.stopPropagation();
@@ -173,8 +176,10 @@
         $('body').on('keydown', '.qool-icon-entry', 'return', function(event) {
             event.preventDefault();
             var new_num = $(this).val();
-            var vrb_idn = $(this).closest(selector).data('vrb-idn');
+            var $qool_icon = $(this).closest('.qool-icon');
+            var vrb_idn = $(this).closest('.qool-icon').data('vrb-idn');
             var obj_idn = $(this).closest('.word').data('idn');
+            // TODO:  Search instead for a class that qoolbar.target() installed?  Better D.R.Y.
             qoolbar.post(
                 'sentence',
                 {
@@ -185,9 +190,9 @@
                 },
                 function(response) {
                     if (response.is_valid) {
-                        console.info("Just in: " + response.icon_html)
+                        // console.info("Just in: " + response.icon_html);
                         qoolbar._end_all_editing();
-                        //window.location.reload(true);
+                        $qool_icon.replaceWith(response.icon_html);
                     } else {
                         console.warn("Error editing num: " + response.error_message);
                     }
@@ -218,6 +223,7 @@
     qoolbar._end_all_editing = function() {
         if (qoolbar._is_anybody_editing) {
             qoolbar._is_anybody_editing = false;
+            // TODO:  _is_anybody_editing obviated?
             // This _is_anybody_editing flag presumably makes _end_all_editing() less of a drag.
             // Otherwise there might be frequent expensive jQuery removing.
             // But that's when it used to be called every document click.

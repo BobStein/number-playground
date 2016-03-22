@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseNotFound
 import django.shortcuts
 from django.template.loader import render_to_string
-from django.template import RequestContext
 from django.views.decorators.csrf import ensure_csrf_cookie
 import logging
 logger = logging.getLogger(__name__)
@@ -295,7 +294,8 @@ def qiki_ajax(request):
                             txt=txt,
                         )
                         # return django.shortcuts.redirect('/qiki-playground/')
-                        jbo = lex.find_words(idn=obj, jbo_vrb=vrb)[0].jbo
+                        # jbo = lex.find_words(obj=obj, vrb=vrb)
+                        # jbo = lex.find_words(idn=obj, jbo_vrb=vrb)[0]
                         return valid_responses(dict(
                             report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
                                 sbj=me.idn.qstring(),
@@ -308,10 +308,13 @@ def qiki_ajax(request):
                                 'icon-diagram-call.html',
                                 templatetags.playground_extras.icon_diagram(
                                     vrb,
-                                    {me: {'num': qiki.Number(1), 'history': []}},
+                                    templatetags.playground_extras.organize_words_by_vrb_and_sbj(
+                                        lex.find_words(obj=obj, vrb=vrb)
+                                    )[vrb],
                                     me.idn
                                 )
-                            ) + repr(jbo),
+                            )
+                            # + repr(jbo),
                             # icon_html=repr(templatetags.playground_extras.icon_diagram(
                             #     vrb,
                             #     {},
