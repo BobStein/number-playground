@@ -12,7 +12,7 @@
         <span class="vrb-x-num-x-{{ vrb }}">
             <span class="vrb-num vrb-{{ vrb_txt }}">
                 <span class="vrb vrb-{{ vrb_txt }}" title="{{ vrb_idn }}">{{ vrb_txt }}</span>
-                {% if num != "1.0" and num != "1" %}
+                {% if num_rendered != "1" %}
                     <span class="vrb-x-num">&times;</span>
                     <span class="num" title="{{ num_qstring }}">{{ num_rendered }}</span>
                 {% endif %}

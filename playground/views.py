@@ -387,3 +387,7 @@ def invalid_response(error_message):
         error_message=error_message
     )
     return HttpResponse(json.dumps(response_dict))
+
+
+
+# SEE about Django template dot notation versatility, very helpful, http://stackoverflow.com/a/1700726/673991

@@ -52,7 +52,7 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     # TODO:  If NotFound (i.e. not iconified) display some kind of gussied up name instead?
 
     icon_title = qoolified_verb.txt + ": "
-    everybody_num = 0
+    everybody_else_num = 0
     me_num = 0
     for author, author_entry in icon_entry.iteritems():
         assert isinstance(author, qiki.Word)
@@ -60,12 +60,12 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
         assert isinstance(author_entry['num'], qiki.Number)
         assert isinstance(author_entry['history'], list)
         author_num = int(author_entry['num'])   # TODO:  round(num,1)?  num.round(1)??  num.str(4) e.g. '4K'
-        everybody_num += author_num
         if author.idn == user_idn:
             author_is_me = " (me)"
             me_num = author_num
         else:
             author_is_me = ""
+            everybody_else_num += author_num
         icon_title += "\n"
         icon_title += author.txt
         icon_title += author_is_me
@@ -81,14 +81,29 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
 
         icon_title += "-".join(rating_strings(author_entry['history']))
 
-    if me_num == 0 and everybody_num == 0:
+    if me_num == 0 and everybody_else_num == 0:
         return dict()
+
+    if me_num == 0:
+        icon_sup = EMPTY_BLING
+    elif me_num == 1:
+        if everybody_else_num == 0:
+            icon_sup = EMPTY_BLING
+        else:
+            icon_sup = me_num
+    else:
+        icon_sup = me_num
+
+    if everybody_else_num == 0:
+        icon_sub = EMPTY_BLING
+    else:
+        icon_sub = everybody_else_num + me_num
 
     return dict(
         icon_src=icon.txt,
         icon_title=icon_title,
-        icon_sup=me_num if me_num not in (0,1) else EMPTY_BLING,
-        icon_sub=everybody_num if everybody_num != me_num else EMPTY_BLING,
+        icon_sup=icon_sup,
+        icon_sub=icon_sub,
         me_nonzero='me-nonzero' if me_num != 0 else '',
         data_num=me_num,
         vrb_idn=qoolified_verb.idn,
@@ -99,22 +114,23 @@ def organize_words_by_vrb_and_sbj(words):
     """Translate jbo to jbo_dict.  See word_diagram()."""
     # XXX:  Clearly this should be encapsulated in some kind of brilliant, awesome Word container class.
     # And lex.find(jbo_vrb=blah) should output it somehow
-    # And so should word.jbo()
+    # And so should word.jbo(vrb=blah)
     # And maybe the former should prime the latter in some spooky way, for efficiency and stuff.
+    # TODO:  Sort by sbj, vrb and use itertools.groupby?
     word_dict = {}
-    for q in words:
+    for word in words:
         try:
-            icon_entry = word_dict[q.vrb]
+            icon_entry = word_dict[word.vrb]
         except KeyError:
             icon_entry = dict()
-            word_dict[q.vrb.inchoate_copy()] = icon_entry
+            word_dict[word.vrb.inchoate_copy()] = icon_entry
         try:
-            author_entry = icon_entry[q.sbj]
+            author_entry = icon_entry[word.sbj]
         except KeyError:
-            author_entry = {'history': []}
-            icon_entry[q.sbj.inchoate_copy()] = author_entry
-        author_entry['history'].append(q)
-        author_entry['num'] = q.num
+            author_entry = dict(history=[])
+            icon_entry[word.sbj.inchoate_copy()] = author_entry
+        author_entry['history'].append(word)
+        author_entry['num'] = word.num
     return word_dict
 
 
@@ -127,8 +143,8 @@ def word_diagram(word, show_idn=False, user_idn=None):
 
     jbo_dict is a dictionary
     ------------------------
-    It pre-processes the jbo attribute of the word.
-    Tt breaks down the jbo container into a 2D dictionary
+    It pre-processes word.jbo, a simple chronological list of words.
+    Tt reorganizes the words into a 2D dictionary
         first by icon (verb) and then by author (subject)
     The keys of the dictionary are themselves words
         the qool verb for the icon, DjangoUser() for the author.
