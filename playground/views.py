@@ -231,7 +231,7 @@ def qiki_ajax(request):
                             name=qool_verb.txt,
                         )
                         verbs.append(dict(
-                            idn=str(int(qool_verb.idn)),
+                            idn=qool_verb.idn.qstring(),
                             icon_url=icon.txt,
                             name=qool_verb.txt,
                         ))

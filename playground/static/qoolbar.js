@@ -58,8 +58,9 @@
                 var $source = ui.draggable;
                 var $destination = $(event.target);
                 var verb_name = $source.data('verb');
+                var vrb_idn = $source.data('vrb-idn');
                 var destination_idn = $destination.data('idn');
-                // TODO:  some work ... var $qool_icon = $destination.find('.qool-icon').filter('[data-vrb-idn="' + vrb_idn + '"]');
+                var $qool_icon = $destination.find('.qool-icon').filter('[data-vrb-idn="' + vrb_idn + '"]');
                 qoolbar.post(
                     'sentence',
                     {
@@ -70,7 +71,12 @@
                     },
                     function(response) {
                         if (response.is_valid) {
-                            window.location.reload(true);
+                            if ($qool_icon.length > 0) {
+                                $qool_icon.replaceWith(response.icon_html)
+                            } else {
+                                $destination.append(response.icon_html)
+                            }
+                            //window.location.reload(true);
                         } else {
                             alert(response.error_message);
                         }
@@ -103,7 +109,11 @@
 
     /**
      * Build the qoolbar div, with verb spans.
-     * @param verbs
+     * @param verbs[]
+     * @param verbs.length
+     * @param verbs.name - e.g. 'like' - why does this work and not verbs[].name ala http://usejsdoc.org/tags-param.html#parameters-with-properties
+     * @param verbs.idn
+     * @param verbs.icon_url
      * @returns {*|HTMLElement}
      * @private
      */
@@ -119,7 +129,8 @@
             var verb_html = $('<span/>')
                 .html(img_html)
                 .addClass('qool-verb qool-verb-' + verb.name)
-                .attr('data-verb', verb.name);
+                .attr('data-verb', verb.name)
+                .attr('data-vrb-idn', verb.idn);
             return_value.append(verb_html);
         }
         return_value.addClass('qoolbar fade_until_hover');
@@ -134,7 +145,7 @@
         $(document.body).css('background-color', 'rgb(215,215,215)');
     };
 
-    qoolbar.click_to_edit = function(selector) {
+    qoolbar.click_to_edit = function() {
 
         // TODO:  Can we really rely on $(.word) to contain the $(.qool-icon)s?  Seriously not D.R.Y.
         $('.word').on('mousedown', '.qool-icon', function () {
@@ -172,7 +183,6 @@
             event.stopPropagation();
         });
 
-        //noinspection JSJQueryEfficiency
         $('body').on('keydown', '.qool-icon-entry', 'return', function(event) {
             event.preventDefault();
             var new_num = $(this).val();
