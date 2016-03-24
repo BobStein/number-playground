@@ -25,7 +25,7 @@
             {# TODO:  classes for entire define hierarchy, e.g. txt-user txt-agent txt-noun #}
         {% endif %}
         <span class="whn-time-code">{{ yyyy_mmdd_hhmm_ss_mmm }}</span>
-        <span class="qhistory">
+        <span class="qool-history">
             {% for x in jbo %}
                 {% jbo_diagram x %}
             {% endfor %}
@@ -36,6 +36,9 @@
         {% for vrb, icon_entry in jbo_dict.items %}
             {% icon_diagram vrb icon_entry user_idn %}
         {% endfor %}
+        <span class="qool-pad">
+            <img src="http://tool.qiki.info/icon/graygear_16.png">
+        </span>
 {#    TODO:  Extend the icons to a little "landing" pad for new icons to drop. #}
 {#    Also provide a gear-icon that only appears when hovering.  (But not when drag-hoveribng.) #}
     </div>

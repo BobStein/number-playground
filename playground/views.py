@@ -115,34 +115,6 @@ def number_playground_submission(request):
         return HttpResponse('Oops, this is a POST-only URL.')
 
 
-# class StripEmptyHtmlCommentsMiddleware:
-#     """
-#     Strips all html comments from response content.
-#     """
-#     # THANKS:  https://djangosnippets.org/snippets/123/
-#     def __init__(self):
-#         # self.html_comments = re.compile('<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)>')
-#         self.html_comments = re.compile('<!--[ \r\n\t]*-->')
-#
-#     def process_response(self, _, response):
-#         # if "text" in response['Content-Type']:
-#             new_content = self.html_comments.sub('', response.content)
-#             response.content = new_content
-#             return response
-#         # else:
-#         #     return response
-#
-# stripper = StripEmptyHtmlCommentsMiddleware()
-# # TODO:  More elegantly use middleware?
-#
-# def strip_empty_html_comments(func):
-#     def f (request):
-#         response = func(request)
-#         response = stripper.process_response(request, response)
-#         return response
-#     return f
-
-
 def strip_response_empty_html_comments(response):
     response.content = strip_empty_html_comments(response.content)
     return response
@@ -164,12 +136,7 @@ def qiki_playground(request):
         qool_idns = {w.obj for w in qool_declarations}
         words = lex.find_words(jbo_vrb=qool_idns)
         for word in words:
-            word.vrb_jbo_vrb_qool = u'vrb-jbo-vrb-qool' if word.vrb in qool_idns else u''
-            # TODO:  Obviate the above tedium by "soft" words
-            # e.g. w=Word(idn) doesn't populate (harden, meaning read its sentence from the database)
-            # until w.sbj is used
-            # and when it does, w.sbj is (at first) another soft word within the (now hardened) w.
-            # This could pave the way for reverse lookups, e.g. w.jbo(vrb=qool_verbs)
+            word.vrb_is_qool = u'vrb-is-qool' if word.vrb in qool_idns else u''
         return strip_response_empty_html_comments(django.shortcuts.render(
             request,
             'qiki-playground.html',

@@ -3,6 +3,7 @@
 <head>
 <title>qiki playground</title>
 <link rel="stylesheet" type="text/css" href="{% static 'qoolbar.css' %}" />
+<!--suppress CssUnusedSymbol -->
 <style>
     body {
         background-color: rgb(215,215,215);
@@ -70,8 +71,16 @@
     .qool-icon.me-nonzero img {
         opacity: 1.0;
     }
+    .qool-pad img {
+        visibility: hidden;
+    }
+    .qool-pad:hover img {
+        visibility: visible;
+    }
 </style>
+<!--suppress JSUnresolvedLibraryURL -->
 <script src="//ajax.googleapis.com/ajax/libs/jquery/{{ settings.JQUERY_VERSION }}/jquery.min.js"></script>
+<!--suppress JSUnresolvedLibraryURL -->
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/{{ settings.JQUERYUI_VERSION }}/jquery-ui.min.js"></script>
 <script src="//cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.js"></script>
 <script src="{% static 'qoolbar.js' %}"></script>
@@ -88,15 +97,15 @@ $(document).ready(function() {
     qoolbar.html('#qoolbar');
     qoolbar.target('.word');   // Each of these elements must have a data-idn attribute.
 
-    show_or_hide('#show-qooling', '.vrb-jbo-vrb-qool', "qooling", "sentences with a qool verb");
+    show_or_hide('#show-qooling', '.vrb-is-qool', "qooling", "sentences with a qool verb");
     show_or_hide('#show-lex', '.sbj-lex', "lex", "sentences with lex as the subject");
-    show_or_hide('#show-qhistory', '.qhistory', "icon history", "icon assignments and revisions");
+    show_or_hide('#show-qool-history', '.qool-history', "icon history", "icon assignments and revisions");
     show_or_hide('#show-time-code', '.whn-time-code', "time code", "exactly when sentences were created");
 
     $('.show-or-hide').on('mousedown', function(event) {
         event.preventDefault();
         // THANKS:  Buttons don't get focus, http://stackoverflow.com/a/30949767/673991
-    })
+    });
 
     qoolbar.click_to_edit();
 });
@@ -158,6 +167,7 @@ function show_error_message(message) {
     {% user_display user %}
 
     {# TODO: "/accounts/logout/" -- D.R.Y. with django.core.urlresolvers.reverse('accounts:') ... #}
+    <!--suppress HtmlUnknownTarget -->
     <a href="/accounts/logout/" class="pull-right">Logout</a>
     {# The following don't work very well. #}
     {#    {% load socialaccount %}#}
@@ -168,10 +178,10 @@ function show_error_message(message) {
 
 <p>
     Show:
-    <button id="show-qooling"   data-is-shown="false" class="show-or-hide"></button>&nbsp;
-    <button id="show-lex"       data-is-shown="false" class="show-or-hide"></button>&nbsp;
-    <button id="show-qhistory"  data-is-shown="false" class="show-or-hide"></button>&nbsp;
-    <button id="show-time-code" data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-qooling"      data-is-shown="false" class="show-or-hide"></button>&nbsp;
+    <button id="show-lex"          data-is-shown="false" class="show-or-hide"></button>&nbsp;
+    <button id="show-qool-history" data-is-shown="false" class="show-or-hide"></button>&nbsp;
+    <button id="show-time-code"    data-is-shown="false" class="show-or-hide"></button>
 </p>
 
 <pre id="report_block"></pre>
@@ -189,7 +199,7 @@ function show_error_message(message) {
 <div class="word-diagram">
     <ul>
         {% for word in words reversed %}
-            <li class="sbj-{{ word.sbj.txt }} {{ word.vrb_jbo_vrb_qool }}">
+            <li class="sbj-{{ word.sbj.txt }} {{ word.vrb_is_qool }}">
                 {% word_diagram word show_idn=True user_idn=user_idn %}
             </li>
         {% endfor %}
