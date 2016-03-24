@@ -33,9 +33,11 @@
 {#                {{ author }}#}
 {#            {% endfor %}#}
         </span>
-        {% for vrb, icon_entry in jbo_dict.items %}
-            {% icon_diagram vrb icon_entry user_idn %}
-        {% endfor %}
+        <span class="qool-badges">
+            {% for vrb, icon_entry in jbo_dict.items %}
+                {% icon_diagram vrb icon_entry user_idn %}
+            {% endfor %}
+        </span>
         <span class="qool-pad">
             <img src="http://tool.qiki.info/icon/graygear_16.png">
         </span>

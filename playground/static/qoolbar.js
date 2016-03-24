@@ -74,7 +74,7 @@
                             if ($qool_icon.length > 0) {
                                 $qool_icon.replaceWith(response.icon_html)
                             } else {
-                                $destination.append(response.icon_html)
+                                $destination.find('.qool-badges').append(response.icon_html)
                             }
                             //window.location.reload(true);
                         } else {
