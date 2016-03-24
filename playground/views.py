@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 import sys
 
 from django import forms
@@ -114,6 +115,44 @@ def number_playground_submission(request):
         return HttpResponse('Oops, this is a POST-only URL.')
 
 
+# class StripEmptyHtmlCommentsMiddleware:
+#     """
+#     Strips all html comments from response content.
+#     """
+#     # THANKS:  https://djangosnippets.org/snippets/123/
+#     def __init__(self):
+#         # self.html_comments = re.compile('<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)>')
+#         self.html_comments = re.compile('<!--[ \r\n\t]*-->')
+#
+#     def process_response(self, _, response):
+#         # if "text" in response['Content-Type']:
+#             new_content = self.html_comments.sub('', response.content)
+#             response.content = new_content
+#             return response
+#         # else:
+#         #     return response
+#
+# stripper = StripEmptyHtmlCommentsMiddleware()
+# # TODO:  More elegantly use middleware?
+#
+# def strip_empty_html_comments(func):
+#     def f (request):
+#         response = func(request)
+#         response = stripper.process_response(request, response)
+#         return response
+#     return f
+
+
+def strip_response_empty_html_comments(response):
+    response.content = strip_empty_html_comments(response.content)
+    return response
+
+
+def strip_empty_html_comments(html):
+    return re.sub(r'<!--[ \r\n\t]*-->', '', html)
+
+
+# @strip_empty_html_comments
 @login_required
 def qiki_playground(request):
     if request.user.is_anonymous():
@@ -131,7 +170,7 @@ def qiki_playground(request):
             # until w.sbj is used
             # and when it does, w.sbj is (at first) another soft word within the (now hardened) w.
             # This could pave the way for reverse lookups, e.g. w.jbo(vrb=qool_verbs)
-        return django.shortcuts.render(
+        return strip_response_empty_html_comments(django.shortcuts.render(
             request,
             'qiki-playground.html',
             {
@@ -141,7 +180,7 @@ def qiki_playground(request):
                 'words': words,
                 'user_idn': DjangoUser(qiki.Number(request.user.id)).idn
             }
-        )
+        ))
 
 
 class DjangoUser(qiki.Listing):
@@ -192,6 +231,7 @@ class QikiActionSentenceForm(QikiActionForm):
     num_add = forms.CharField(required=False, initial='0')
     txt = forms.CharField(required=False)
 
+# @strip_empty_html_comments
 @login_required
 def qiki_ajax(request):
     if request.user.is_anonymous():
@@ -304,7 +344,7 @@ def qiki_ajax(request):
                                 num=word.num.qstring(),
                                 txt=txt,
                             ),
-                            icon_html=render_to_string(
+                            icon_html=strip_empty_html_comments(render_to_string(
                                 'icon-diagram-call.html',
                                 templatetags.playground_extras.icon_diagram(
                                     vrb,
@@ -313,7 +353,7 @@ def qiki_ajax(request):
                                     )[vrb],
                                     me.idn
                                 )
-                            )
+                            ))
                             # + repr(jbo),
                             # icon_html=repr(templatetags.playground_extras.icon_diagram(
                             #     vrb,
