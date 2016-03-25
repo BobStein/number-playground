@@ -175,13 +175,15 @@ def install_qoolbar_verbs():
     lex.verb(u'qool')
     lex.verb(u'iconify')
 
-    like = lex.verb(u'like')
-    lex.qool(like, qiki.Number(1), use_already=True)
-    lex.iconify(like, qiki.Number(16), u'http://tool.qiki.info/icon/thumbsup_16.png', use_already=True)
+    def icon(name, width, url):
+        qool_verb = lex.verb(name)
+        lex.qool(qool_verb, 1, use_already=True)
+        lex.iconify(qool_verb, width, url, use_already=True)
 
-    delete = lex.verb(u'delete')
-    lex.qool(delete, qiki.Number(1), use_already=True)
-    lex.iconify(delete, qiki.Number(16), u'http://tool.qiki.info/icon/delete_16.png', use_already=True)
+    icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
+    icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
+
+
 install_qoolbar_verbs()
 
 

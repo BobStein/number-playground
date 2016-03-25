@@ -68,8 +68,19 @@
 .icon-sub {
 }
 
+.word {
+    position: relative;   /* children  */
+    z-index: 1;
+}
+.qool-icon-entry-container {
+    position: relative;
+    /* THANKS:  For zero-size positioning, http://stackoverflow.com/a/21187684/673991 */
+}
+
 .qool-icon-entry {
+    position: absolute;
     width: 2em;
     box-shadow: 3px -3px 3px #999;
     border: 1px solid #999;
+    z-index: 2;
 }

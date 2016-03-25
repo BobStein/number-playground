@@ -166,13 +166,23 @@
                 $(this).addClass('qool-editing');
                 qoolbar._is_anybody_editing = true;
                 var old_num = $(this).data('num');
-                var input = $('<input/>', {
+                var $input = $('<input>', {
                     type: 'text',
                     class: 'qool-icon-entry',
                     value: old_num
                 });
-                $(this).append(input);
-                input.select();
+                var $span_input = $('<span>', {
+                    class: 'qool-icon-entry-container'
+                });
+                $span_input.append($input);
+                $(this).append($span_input);
+                $input.select();
+                var $icon_sup = $(this).find('.icon-sup');
+                var icon_sup_pos = $icon_sup.offset();
+                $input.offset({
+                     'top': icon_sup_pos.top - $input.outerHeight() + $icon_sup.outerHeight(),
+                    'left': icon_sup_pos.left
+                });
             }
             event.stopPropagation();
         });
@@ -243,7 +253,7 @@
             // to just the two remove calls.
             // Sheesh yes, I think this flag is always true when this function is called!
             $('.qool-editing').removeClass('qool-editing');
-            $('.qool-icon-entry').remove();
+            $('.qool-icon-entry-container').remove();
         }
     };
 
