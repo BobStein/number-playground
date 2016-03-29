@@ -109,6 +109,10 @@ else:
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.normpath(os.path.join(BASE_DIR, '.' + STATIC_URL))
+STATICFILES_DIRS = [
+    os.path.normpath(os.path.join(BASE_DIR, '../qiki-javascript/static/'))
+]
+# STATIC_ROOT = '/PyCharmProjects/qiki-javascript/static/'
 # THANKS:  normpath - http://stackoverflow.com/a/21765815/673991
 
 
