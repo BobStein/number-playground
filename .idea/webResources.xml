@@ -5,8 +5,8 @@
       <entry url="file://$PROJECT_DIR$/../qiki-python">
         <entryData>
           <resourceRoots>
-            <path value="file://$PROJECT_DIR$" />
             <path value="file://$PROJECT_DIR$/../qiki-python" />
+            <path value="file://$PROJECT_DIR$/../qiki-javascript" />
           </resourceRoots>
         </entryData>
       </entry>

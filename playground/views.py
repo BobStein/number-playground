@@ -287,6 +287,8 @@ def qiki_ajax(request):
                                     message=str(e),
                                 )
                             )
+                        if num is None and num_add is None:
+                            return invalid_response("Both num and num_add are empty.")
 
                         txt = sentence_form.cleaned_data.get('txt', '')
 

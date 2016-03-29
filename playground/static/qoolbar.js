@@ -15,6 +15,10 @@
         qoolbar.post(
             'qoolbar_list',
             {},
+           /**
+             * @param response
+             * @param response.verbs --
+             */
             function(response) {
                 $(selector)
                     .html(qoolbar._build(response.verbs));
@@ -69,6 +73,12 @@
                         num_add: '1',
                         txt: ''
                     },
+                    /**
+                     * @param response
+                     * @param response.is_valid -- all good?
+                     * @param response.icon_html -- (if valid) replacement icon diagram html
+                     * @param response.error_message (if not valid)
+                     */
                     function(response) {
                         if (response.is_valid) {
                             if ($qool_icon.length > 0) {
@@ -111,12 +121,14 @@
      * Build the qoolbar div, with verb spans.
      * @param verbs[]
      * @param verbs.length
-     * @param verbs.name - e.g. 'like' - why does this work and not verbs[].name ala http://usejsdoc.org/tags-param.html#parameters-with-properties
+     * @param verbs.name -- e.g. 'like'
      * @param verbs.idn
-     * @param verbs.icon_url
+     * @param verbs.icon_url -- from the iconify sentence
      * @returns {*|HTMLElement}
      * @private
      */
+    // Why does verbs.name work and not verbs[].name?
+    // SEE:  http://usejsdoc.org/tags-param.html#parameters-with-properties
     qoolbar._build = function(verbs) {
         var return_value = $("<div/>");
         var num_verbs = verbs.length;
@@ -148,6 +160,8 @@
     qoolbar.click_to_edit = function() {
 
         // TODO:  Can we really rely on $(.word) to contain the $(.qool-icon)s?  Seriously not D.R.Y.
+        // Because that containment is expressed in word-diagram-call.html --> icon_diagram --> playground_extras.py --> icon-diagram-call.html
+        // Is the solution to develop a RESTful API??
         $('.word').on('mousedown', '.qool-icon', function () {
             var was_already_editing = $(this).hasClass('qool-editing');
             $(this).data('was_already_editing', was_already_editing);
@@ -196,6 +210,10 @@
         $('body').on('keydown', '.qool-icon-entry', 'return', function(event) {
             event.preventDefault();
             var new_num = $(this).val();
+            if (new_num == '') {
+                qoolbar._end_all_editing();
+                return
+            }
             var $qool_icon = $(this).closest('.qool-icon');
             var vrb_idn = $(this).closest('.qool-icon').data('vrb-idn');
             var obj_idn = $(this).closest('.word').data('idn');
