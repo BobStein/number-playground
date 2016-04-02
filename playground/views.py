@@ -1,3 +1,4 @@
+from __future__ import print_function
 import datetime
 import json
 import re
@@ -160,25 +161,26 @@ class DjangoUser(qiki.Listing):
         callback(user_name, qiki.Number(1))
 
 
+_lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
+
 def get_lex():
-    lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
-    listing = lex.noun(u'listing')
+    listing = _lex.define(_lex.noun(), u'listing')
     qiki.Listing.install(listing)
-    django_user = listing(u'django_user')
+    django_user = _lex.define(listing, u'django_user')
     DjangoUser.install(django_user)
     # raise Exception
-    return lex
+    return _lex
 
 
 def install_qoolbar_verbs():
     lex = get_lex()
-    lex.verb(u'qool')
-    lex.verb(u'iconify')
+    qool = lex.verb(u'qool')
+    iconify = lex.verb(u'iconify')
 
     def icon(name, width, url):
         qool_verb = lex.verb(name)
-        lex.qool(qool_verb, 1, use_already=True)
-        lex.iconify(qool_verb, width, url, use_already=True)
+        lex.says(qool, qool_verb, 1, use_already=True)   # TODO:  Override later sentence with different txt.
+        lex.says(iconify, qool_verb, width, url, use_already=True)
 
     icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
     icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
@@ -296,17 +298,41 @@ def qiki_ajax(request):
                         if not obj.exists():
                             return invalid_response("Object idn {} does not exist.".format(obj_idn))
 
-                        word = lex.sentence(
-                            sbj=me,
+                        max_before = lex.max_idn()
+
+                        word = me.says(
                             vrb=vrb,
                             obj=obj,
                             num=num,
                             num_add=num_add,
                             txt=txt,
                         )
+
+                        max_after = lex.max_idn()
+                        print("Jill", max_before.qstring(), word.idn.qstring(), max_after.qstring())
+
                         # return django.shortcuts.redirect('/qiki-playground/')
                         # jbo = lex.find_words(obj=obj, vrb=vrb)
                         # jbo = lex.find_words(idn=obj, jbo_vrb=vrb)[0]
+
+                        word_dict = templatetags.playground_extras.organize_words_by_vrb_and_sbj(
+                            lex.find_words(obj=obj, vrb=vrb)
+                        )
+                        try:
+                            icon_entry = word_dict[vrb]
+                        except KeyError:
+                            raise RuntimeError("Could not find {vrb} in {word_dict}".format(
+                                vrb=repr(vrb),
+                                word_dict=repr(word_dict)
+                            ))
+                        icon_html = strip_empty_html_comments(render_to_string(
+                            'icon-diagram-call.html',
+                            templatetags.playground_extras.icon_diagram(
+                                vrb,
+                                icon_entry,
+                                me.idn
+                            )
+                        ))
                         return valid_responses(dict(
                             report="[{sbj}]-->({vrb})-->[{obj}] Number({num}) '{txt}'".format(
                                 sbj=me.idn.qstring(),
@@ -315,16 +341,7 @@ def qiki_ajax(request):
                                 num=word.num.qstring(),
                                 txt=txt,
                             ),
-                            icon_html=strip_empty_html_comments(render_to_string(
-                                'icon-diagram-call.html',
-                                templatetags.playground_extras.icon_diagram(
-                                    vrb,
-                                    templatetags.playground_extras.organize_words_by_vrb_and_sbj(
-                                        lex.find_words(obj=obj, vrb=vrb)
-                                    )[vrb],
-                                    me.idn
-                                )
-                            ))
+                            icon_html=icon_html
                             # + repr(jbo),
                             # icon_html=repr(templatetags.playground_extras.icon_diagram(
                             #     vrb,
@@ -353,8 +370,8 @@ def qiki_ajax(request):
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
                     me = DjangoUser(qiki.Number(request.user.id))
-                    lex.verb(u'comment')
-                    me.comment(lex, qiki.Number(1), comment_text)
+                    comment = lex.verb(u'comment')
+                    me.says(comment, lex, qiki.Number(1), comment_text)
                     # # me.comment(lex, 1, comment_text)
                     # # TODO:  Would this work if there were a me.lex?
                     # comment_word = lex.spawn(
