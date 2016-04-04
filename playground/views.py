@@ -179,7 +179,7 @@ def install_qoolbar_verbs():
 
     def icon(name, width, url):
         qool_verb = lex.verb(name)
-        lex.says(qool, qool_verb, 1, use_already=True)   # TODO:  Override later sentence with different txt.
+        lex.says(qool, qool_verb, 1, use_already=True)   # DONE:  Override later sentence with different txt.
         lex.says(iconify, qool_verb, width, url, use_already=True)
 
     icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
