@@ -16,7 +16,7 @@ EMPTY_BLING = ZERO_WIDTH_SPACE   # But nonzero height
 @register.inclusion_tag('jbo-diagram-call.html')
 def jbo_diagram(x):
     lex = x.lex
-    iconify = lex(u'iconify')
+    iconify = lex[u'iconify']
     icons = lex.find_words(vrb=iconify, obj=x.vrb)
     # TODO:  Limit find_words to latest iconification sentence using sql.
     icon = icons[-1]
@@ -46,7 +46,7 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     assert isinstance(icon_entry, dict)
     assert isinstance(user_idn, qiki.Number)
     lex = qoolified_verb.lex
-    iconify = lex(u'iconify')
+    iconify = lex[u'iconify']
     icon = lex.find_last(vrb=iconify, obj=qoolified_verb)
     # TODO:  icon = qoolified_verb.jbo(vrb=iconify)[-1]
     # TODO:  If NotFound (i.e. not iconified) display some kind of gussied up name instead?

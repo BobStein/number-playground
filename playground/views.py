@@ -164,7 +164,7 @@ class DjangoUser(qiki.Listing):
 _lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
 
 def get_lex():
-    listing = _lex.define(_lex.noun(), u'listing')
+    listing = _lex.noun(u'listing')
     qiki.Listing.install(listing)
     django_user = _lex.define(listing, u'django_user')
     DjangoUser.install(django_user)
@@ -179,8 +179,10 @@ def install_qoolbar_verbs():
 
     def icon(name, width, url):
         qool_verb = lex.verb(name)
-        lex.says(qool, qool_verb, 1, use_already=True)   # DONE:  Override later sentence with different txt.
-        lex.says(iconify, qool_verb, width, url, use_already=True)
+        # lex.says(qool, qool_verb, 1, use_already=True)
+        # lex.says(iconify, qool_verb, width, url, use_already=True)
+        lex(qool, use_already=True)[qool_verb] = 1
+        lex(iconify, use_already=True)[qool_verb] = width, url
 
     icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
     icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
@@ -217,7 +219,7 @@ def qiki_ajax(request):
                     idns = lex.get_all_idns()
                     report=""
                     for idn in idns:
-                        word = lex(idn)
+                        word = lex[idn]
                         report += str(int(idn)) + " " + word.description()
                         report += "\n"
                     return valid_response('report', report)
@@ -226,8 +228,8 @@ def qiki_ajax(request):
                     #     number_playground/playground/static/qoolbar.js
                     #     number_playground/playground/templatetags/playground_extras.py
                     lex = get_lex()
-                    iconify = lex(u'iconify')
-                    qool_verbs = lex.find_words(vrb=lex(u'define'), obj=lex(u'qool'))
+                    iconify = lex[u'iconify']
+                    qool_verbs = lex.find_words(vrb=lex[u'define'], obj=lex[u'qool'])
                     report = ""
                     verbs = []
                     for qool_verb in qool_verbs:
@@ -260,13 +262,13 @@ def qiki_ajax(request):
                         vrb_idn = sentence_form.cleaned_data['vrb_idn']
                         if vrb_idn != '':
                             try:
-                                vrb = lex(qiki.Number.from_qstring(vrb_idn))
+                                vrb = lex[qiki.Number.from_qstring(vrb_idn)]
                             except ValueError:
                                 return invalid_response("Verb idn {} is not valid.".format(vrb_idn))
                             if not vrb.exists():
                                 return invalid_response("Verb idn {} does not exist".format(vrb_idn))
                         elif vrb_txt != '':
-                            vrb = lex(vrb_txt)
+                            vrb = lex[vrb_txt]
                             if not vrb.exists():
                                 return invalid_response("Verb txt '{}' does not exist".format(vrb_txt))
                         else:
@@ -294,7 +296,7 @@ def qiki_ajax(request):
 
                         txt = sentence_form.cleaned_data.get('txt', '')
 
-                        obj=lex(obj_idn)
+                        obj=lex[obj_idn]
                         if not obj.exists():
                             return invalid_response("Object idn {} does not exist.".format(obj_idn))
 
