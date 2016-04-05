@@ -177,15 +177,24 @@ def install_qoolbar_verbs():
     qool = lex.verb(u'qool')
     iconify = lex.verb(u'iconify')
 
-    def icon(name, width, url):
-        qool_verb = lex.verb(name)
-        # lex.says(qool, qool_verb, 1, use_already=True)
-        # lex.says(iconify, qool_verb, width, url, use_already=True)
-        lex(qool, use_already=True)[qool_verb] = 1
-        lex(iconify, use_already=True)[qool_verb] = width, url
+    # def icon(name, width, url):
+    #     qool_verb = lex.verb(name)
+    #     # lex.says(qool, qool_verb, 1, use_already=True)
+    #     # lex.says(iconify, qool_verb, width, url, use_already=True)
+    #     lex(qool, use_already=True)[qool_verb] = 1
+    #     lex(iconify, use_already=True)[qool_verb] = width, url
+    #
+    # icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
+    # icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
 
-    icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
-    icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
+
+    like = lex.verb(u'like')
+    lex(qool, use_already=True)[like] = 1
+    lex(iconify, use_already=True)[like] = 16, u'http://tool.qiki.info/icon/thumbsup_16.png'
+
+    delete = lex.verb(u'delete')
+    lex(qool, use_already=True)[delete] = 1
+    lex(iconify, use_already=True)[delete] = 16, u'http://tool.qiki.info/icon/delete_16.png'
 
 
 install_qoolbar_verbs()
@@ -300,8 +309,6 @@ def qiki_ajax(request):
                         if not obj.exists():
                             return invalid_response("Object idn {} does not exist.".format(obj_idn))
 
-                        max_before = lex.max_idn()
-
                         word = me.says(
                             vrb=vrb,
                             obj=obj,
@@ -309,9 +316,7 @@ def qiki_ajax(request):
                             num_add=num_add,
                             txt=txt,
                         )
-
-                        max_after = lex.max_idn()
-                        print("Jill", max_before.qstring(), word.idn.qstring(), max_after.qstring())
+                        assert word.idn == lex.max_idn(), "NEW SENTENCE {} isn't as new as {}.".format(word.idn, lex.max_idn)
 
                         # return django.shortcuts.redirect('/qiki-playground/')
                         # jbo = lex.find_words(obj=obj, vrb=vrb)
@@ -371,9 +376,10 @@ def qiki_ajax(request):
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
                     lex = get_lex()
-                    me = DjangoUser(qiki.Number(request.user.id))
-                    comment = lex.verb(u'comment')
-                    me.says(comment, lex, qiki.Number(1), comment_text)
+                    # me = DjangoUser(qiki.Number(request.user.id))
+                    # comment = lex.verb(u'comment')
+                    # me.says(comment, lex, qiki.Number(1), comment_text)
+                    DjangoUser(request.user.id)(u'comment')[lex] = comment_text
                     # # me.comment(lex, 1, comment_text)
                     # # TODO:  Would this work if there were a me.lex?
                     # comment_word = lex.spawn(
