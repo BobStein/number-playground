@@ -131,7 +131,6 @@ def qiki_playground(request):
     if request.user.is_anonymous():
         return "Log in"
     else:
-        lex = get_lex()
         qool = lex.verb(u'qool')
         qool_declarations = lex.find_words(vrb=qool.idn)
         qool_idns = {w.obj for w in qool_declarations}
@@ -161,19 +160,14 @@ class DjangoUser(qiki.Listing):
         callback(user_name, qiki.Number(1))
 
 
-_lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
-
-def get_lex():
-    listing = _lex.noun(u'listing')
-    qiki.Listing.install(listing)
-    django_user = _lex.define(listing, u'django_user')
-    DjangoUser.install(django_user)
-    # raise Exception
-    return _lex
+lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
+listing = lex.noun(u'listing')
+qiki.Listing.install(listing)
+django_user = lex.define(listing, u'django_user')
+DjangoUser.install(django_user)
 
 
 def install_qoolbar_verbs():
-    lex = get_lex()
     qool = lex.verb(u'qool')
     iconify = lex.verb(u'iconify')
 
@@ -224,7 +218,6 @@ def qiki_ajax(request):
             if form.is_valid():
                 action = form.cleaned_data['action']
                 if action == 'qiki_list':
-                    lex = get_lex()
                     idns = lex.get_all_idns()
                     report=""
                     for idn in idns:
@@ -236,7 +229,6 @@ def qiki_ajax(request):
                     # Used by:
                     #     number_playground/playground/static/qoolbar.js
                     #     number_playground/playground/templatetags/playground_extras.py
-                    lex = get_lex()
                     iconify = lex[u'iconify']
                     qool_verbs = lex.find_words(vrb=lex[u'define'], obj=lex[u'qool'])
                     report = ""
@@ -264,7 +256,6 @@ def qiki_ajax(request):
                 elif action == 'sentence':
                     sentence_form = QikiActionSentenceForm(request.POST)
                     me = DjangoUser(qiki.Number(request.user.id))
-                    lex = get_lex()
                     if sentence_form.is_valid():
 
                         vrb_txt = sentence_form.cleaned_data['vrb_txt']
@@ -375,7 +366,6 @@ def qiki_ajax(request):
                         # XXX:  Why does this "form" include a 'comment' field?!?
                 elif action == 'comment':
                     comment_text = form.cleaned_data['comment']
-                    lex = get_lex()
                     # me = DjangoUser(qiki.Number(request.user.id))
                     # comment = lex.verb(u'comment')
                     # me.says(comment, lex, qiki.Number(1), comment_text)
