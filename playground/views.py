@@ -165,33 +165,34 @@ listing = lex.noun(u'listing')
 qiki.Listing.install(listing)
 django_user = lex.define(listing, u'django_user')
 DjangoUser.install(django_user)
+qoolbar = qiki.QoolbarSimple(lex)
 
 
-def install_qoolbar_verbs():
-    qool = lex.verb(u'qool')
-    iconify = lex.verb(u'iconify')
-
-    # def icon(name, width, url):
-    #     qool_verb = lex.verb(name)
-    #     # lex.says(qool, qool_verb, 1, use_already=True)
-    #     # lex.says(iconify, qool_verb, width, url, use_already=True)
-    #     lex(qool, use_already=True)[qool_verb] = 1
-    #     lex(iconify, use_already=True)[qool_verb] = width, url
-    #
-    # icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
-    # icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
-
-
-    like = lex.verb(u'like')
-    lex(qool, use_already=True)[like] = 1
-    lex(iconify, use_already=True)[like] = 16, u'http://tool.qiki.info/icon/thumbsup_16.png'
-
-    delete = lex.verb(u'delete')
-    lex(qool, use_already=True)[delete] = 1
-    lex(iconify, use_already=True)[delete] = 16, u'http://tool.qiki.info/icon/delete_16.png'
-
-
-install_qoolbar_verbs()
+# def install_qoolbar_verbs():
+#     qool = lex.verb(u'qool')
+#     iconify = lex.verb(u'iconify')
+#
+#     # def icon(name, width, url):
+#     #     qool_verb = lex.verb(name)
+#     #     # lex.says(qool, qool_verb, 1, use_already=True)
+#     #     # lex.says(iconify, qool_verb, width, url, use_already=True)
+#     #     lex(qool, use_already=True)[qool_verb] = 1
+#     #     lex(iconify, use_already=True)[qool_verb] = width, url
+#     #
+#     # icon(u'like', 16, u'http://tool.qiki.info/icon/thumbsup_16.png')
+#     # icon(u'delete', 16, u'http://tool.qiki.info/icon/delete_16.png')
+#
+#
+#     like = lex.verb(u'like')
+#     lex(qool, use_already=True)[like] = 1
+#     lex(iconify, use_already=True)[like] = 16, u'http://tool.qiki.info/icon/thumbsup_16.png'
+#
+#     delete = lex.verb(u'delete')
+#     lex(qool, use_already=True)[delete] = 1
+#     lex(iconify, use_already=True)[delete] = 16, u'http://tool.qiki.info/icon/delete_16.png'
+#
+#
+# install_qoolbar_verbs()
 
 
 class QikiActionForm(forms.Form):
@@ -226,33 +227,36 @@ def qiki_ajax(request):
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'qoolbar_list':
+                    verbs = qoolbar.get_verbs()
+                    return valid_response('verbs', verbs)
                     # Used by:
                     #     number_playground/playground/static/qoolbar.js
-                    #     number_playground/playground/templatetags/playground_extras.py
-                    iconify = lex[u'iconify']
-                    qool_verbs = lex.find_words(vrb=lex[u'define'], obj=lex[u'qool'])
-                    report = ""
-                    verbs = []
-                    for qool_verb in qool_verbs:
-                        icons = lex.find_words(vrb=iconify, obj=qool_verb)
-                        # TODO:  Limit find_words to latest iconify using sql.
-                        icon = icons[-1]
-                        report += """
-                            {number}. <img src="{url}"> {name}<br>
-                        """.format(
-                            number=str(int(icon.idn)),
-                            url=icon.txt,
-                            name=qool_verb.txt,
-                        )
-                        verbs.append(dict(
-                            idn=qool_verb.idn.qstring(),
-                            icon_url=icon.txt,
-                            name=qool_verb.txt,
-                        ))
-                    return valid_responses(dict(
-                        report=report,
-                        verbs=verbs,
-                    ))
+                    #     number_playground/playground/templatetags/playground_extras.py ?
+
+                    # iconify = lex[u'iconify']
+                    # qool_verbs = lex.find_words(vrb=lex[u'define'], obj=lex[u'qool'])
+                    # report = ""
+                    # verbs = []
+                    # for qool_verb in qool_verbs:
+                    #     icons = lex.find_words(vrb=iconify, obj=qool_verb)
+                    #     # TODO:  Limit find_words to latest iconify using sql.
+                    #     icon = icons[-1]
+                    #     report += """
+                    #         {number}. <img src="{url}"> {name}<br>
+                    #     """.format(
+                    #         number=str(int(icon.idn)),
+                    #         url=icon.txt,
+                    #         name=qool_verb.txt,
+                    #     )
+                    #     verbs.append(dict(
+                    #         idn=qool_verb.idn.qstring(),
+                    #         icon_url=icon.txt,
+                    #         name=qool_verb.txt,
+                    #     ))
+                    # return valid_responses(dict(
+                    #     report=report,
+                    #     verbs=verbs,
+                    # ))
                 elif action == 'sentence':
                     sentence_form = QikiActionSentenceForm(request.POST)
                     me = DjangoUser(qiki.Number(request.user.id))
