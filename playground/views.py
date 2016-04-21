@@ -104,6 +104,7 @@ def number_playground_submission(request):
                         return valid_response('qstring', qstring)
                 else:
                     qstring = qiki.Number(floating_point_typed, qigits=7).qstring()
+                    # XXX:  Why qigits=7 here?  The negative round-off bug?  To examine it??
                     return valid_response('qstring', qstring)
             else:
                 r = HttpResponse()
