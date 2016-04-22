@@ -60,11 +60,16 @@
     }
     button.show-or-hide {
         border: none;
-        padding: 0;
+        padding: 5;
         margin: 0;
         cursor: pointer;
         background-color: transparent;
         font: small-caption;
+        border: 1px solid transparent;
+    }
+    button.show-or-hide:hover {
+        background-color: rgb(240,240,240);
+        border: 1px solid rgb(200,200,200);
     }
     .qool-icon img {
         opacity: 0.4;
@@ -99,10 +104,10 @@ $(document).ready(function() {
     qoolbar.html('#qoolbar');
     qoolbar.target('.word');   // Each of these elements must have a data-idn attribute.
 
-    show_or_hide('#show-qooling', '.vrb-is-qool', "qooling", "sentences with a qool verb");
-    show_or_hide('#show-lex', '.sbj-lex', "lex", "sentences with lex as the subject");
-    show_or_hide('#show-qool-history', '.qool-history', "icon history", "icon assignments and revisions");
-    show_or_hide('#show-time-code', '.whn-time-code', "time code", "exactly when sentences were created");
+    show_or_hide('#show-qooling',      '.vrb-is-qool',   "qooling",      "sentences with a qool verb");
+    show_or_hide('#show-lex',          '.sbj-lex',       "lex",          "sentences with lex as the subject");
+    show_or_hide('#show-qool-history', '.qool-history',  "icon history", "icon assignments and revisions");
+    show_or_hide('#show-time-code',    '.whn-time-code', "time code",    "exactly when sentences were created");
 
     $('.show-or-hide').on('mousedown', function(event) {
         event.preventDefault();
@@ -112,17 +117,18 @@ $(document).ready(function() {
     qoolbar.click_to_edit();
 });
 
-function show_or_hide(button, selector, description, elaborate) {
-    _paint_show_or_hide(button, selector, description, elaborate, 'initial');
+function show_or_hide(button, selector, label, elaborate) {
+    _paint_show_or_hide(button, selector, label, elaborate, 'initial');
     $(button).on('click mouseenter mouseleave', function(e) {
-        _paint_show_or_hide(this, selector, description, elaborate, e.type);
+        _paint_show_or_hide(this, selector, label, elaborate, e.type);
     });
 }
 
 var BALLOT_BOX_NO = "\u2610";
 var BALLOT_BOX_YES = "\u2611";
+var LABEL_CHANGE_HOVER = false;
 
-function _paint_show_or_hide(button, selector, description, elaborate, occasion) {
+function _paint_show_or_hide(button, selector, label, elaborate, occasion) {
     var is_shown = $(button).data('is-shown');
     var is_hovering = occasion == 'mouseenter';
     var do_toggle = occasion == 'click';
@@ -133,18 +139,18 @@ function _paint_show_or_hide(button, selector, description, elaborate, occasion)
     if (is_shown) {
         $(selector).show();
         $(button).prop('title', "Click to hide " + elaborate);
-        if (false && is_hovering) {
-            $(button).text(BALLOT_BOX_YES + " hide " + description + " words");
+        if (LABEL_CHANGE_HOVER && is_hovering) {
+            $(button).text(BALLOT_BOX_YES + " hide " + label + " words");
         } else {
-            $(button).text(BALLOT_BOX_YES + " " + description);
+            $(button).text(BALLOT_BOX_YES + " " + label);
         }
     } else {
         $(selector).hide();
         $(button).prop('title', "Click to show " + elaborate);
-        if (false && is_hovering) {
-            $(button).text(BALLOT_BOX_NO + " show " + description + " words");
+        if (LABEL_CHANGE_HOVER && is_hovering) {
+            $(button).text(BALLOT_BOX_NO + " show " + label + " words");
         } else {
-            $(button).text(BALLOT_BOX_NO + " " + description);
+            $(button).text(BALLOT_BOX_NO + " " + label);
         }
     }
 }
@@ -180,9 +186,9 @@ function show_error_message(message) {
 
 <p>
     Show:
-    <button id="show-qooling"      data-is-shown="false" class="show-or-hide"></button>&nbsp;
-    <button id="show-lex"          data-is-shown="false" class="show-or-hide"></button>&nbsp;
-    <button id="show-qool-history" data-is-shown="false" class="show-or-hide"></button>&nbsp;
+    <button id="show-qooling"      data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-lex"          data-is-shown="false" class="show-or-hide"></button>
+    <button id="show-qool-history" data-is-shown="false" class="show-or-hide"></button>
     <button id="show-time-code"    data-is-shown="false" class="show-or-hide"></button>
 </p>
 

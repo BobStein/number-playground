@@ -76,7 +76,9 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
                 assert isinstance(use, qiki.Word)
                 assert use.sbj == author
                 assert use.vrb == qoolified_verb
-                #      use.obj == the object of the qoolified verb, but icon_diagram is ignorant of that object
+                #      use.obj == the object of the qoolified verb,
+                #                 ultimately the word we're decorating with icons (right??),
+                #                 but icon_diagram is ignorant of that object.
                 yield str(int(use.num))
 
         icon_title += "-".join(rating_strings(author_entry['history']))
@@ -115,7 +117,8 @@ def organize_words_by_vrb_and_sbj(words):
     # XXX:  Clearly this should be encapsulated in some kind of brilliant, awesome Word container class.
     # And lex.find(jbo_vrb=blah) should output it somehow
     # And so should word.jbo(vrb=blah)
-    # And maybe the former should prime the latter in some spooky way, for efficiency and stuff.
+    # And maybe the former should prime the latter in some spooky way (ala inchoate),
+    # for efficiency and stuff.
     # TODO:  Sort by sbj, vrb and use itertools.groupby?
     word_dict = {}
     for word in words:
@@ -130,7 +133,7 @@ def organize_words_by_vrb_and_sbj(words):
             author_entry = dict(history=[])
             icon_entry[word.sbj.inchoate_copy()] = author_entry
         author_entry['history'].append(word)
-        author_entry['num'] = word.num
+        author_entry['num'] = word.num   # the last assignment being the latest
     return word_dict
 
 
