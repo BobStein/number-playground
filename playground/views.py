@@ -228,17 +228,20 @@ def qiki_ajax(request):
                         report += "\n"
                     return valid_response('report', report)
                 elif action == 'qoolbar_list':
-                    verbs = qoolbar.get_verbs()
-                    # TODO:  Make Word json serializable, http://stackoverflow.com/a/3768975/673991
-                    # Then we wouldn't have to translate verbs to verb_dicts:
-                    verb_dicts = []
-                    for verb in verbs:
-                        verb_dicts.append(dict(
-                            idn=verb.idn.qstring(),
-                            name=verb.txt,
-                            icon_url=verb.icon_url
-                        ))
-                    return valid_response('verbs', verb_dicts)
+                    return valid_response('verbs', list(qoolbar.get_verb_dicts()))
+
+                    # verbs = qoolbar.get_verbs()
+                    # # TODO:  Make Word json serializable, http://stackoverflow.com/a/3768975/673991
+                    # # Then we wouldn't have to translate verbs to verb_dicts:
+                    # verb_dicts = []
+                    # for verb in verbs:
+                    #     verb_dicts.append(dict(
+                    #         idn=verb.idn.qstring(),
+                    #         name=verb.txt,
+                    #         icon_url=verb.icon_url
+                    #     ))
+                    # return valid_response('verbs', verb_dicts)
+
                     # Used by:
                     #     number_playground/playground/static/qoolbar.js
                     #     number_playground/playground/templatetags/playground_extras.py ?
@@ -267,6 +270,7 @@ def qiki_ajax(request):
                     #     report=report,
                     #     verbs=verbs,
                     # ))
+
                 elif action == 'sentence':
                     sentence_form = QikiActionSentenceForm(request.POST)
                     me = DjangoUser(qiki.Number(request.user.id))
