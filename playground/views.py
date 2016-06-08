@@ -163,7 +163,7 @@ class DjangoUser(qiki.Listing):
 
 lex = qiki.LexMySQL(**secure.credentials.for_playground_database)
 listing = lex.noun(u'listing')
-qiki.Listing.install(listing)
+# qiki.Listing.install(listing)   # No need to do this, right?
 django_user = lex.define(listing, u'django_user')
 DjangoUser.install(django_user)
 qoolbar = qiki.QoolbarSimple(lex)
