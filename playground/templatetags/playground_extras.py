@@ -1,4 +1,5 @@
 import datetime
+import six
 
 import django.template
 
@@ -20,7 +21,7 @@ def jbo_diagram(x):
     icons = lex.find_words(vrb=iconify, obj=x.vrb)
     # TODO:  Limit find_words to latest iconification sentence using sql.
     icon = icons[-1]
-    sbj = x.spawn(x.sbj.idn)
+    sbj = x.spawn(x.sbj)
     return dict(
         icon_src=icon.txt,
         num_if_not_one=str(int(x.num)) if x.num != 1 else '',
@@ -54,7 +55,7 @@ def icon_diagram(qoolified_verb, icon_entry, user_idn):
     icon_title = qoolified_verb.txt + ": "
     everybody_else_num = 0
     me_num = 0
-    for author, author_entry in icon_entry.iteritems():
+    for author, author_entry in six.iteritems(icon_entry):
         assert isinstance(author, qiki.Word)
         assert isinstance(author_entry, dict)
         assert isinstance(author_entry['num'], qiki.Number)
