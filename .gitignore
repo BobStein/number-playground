@@ -7,6 +7,6 @@ secure/
 # Django SQLite experimental database
 db.sqlite3
 
-
+# Less whining
 .idea/
 *.py[oc]
