@@ -28,6 +28,7 @@ def jbo_diagram(x):
         sbj_txt=sbj.txt
     )
 
+
 @register.inclusion_tag('icon-diagram-call.html')
 def icon_diagram(qoolified_verb, icon_entry, user_idn):
     """
@@ -218,6 +219,7 @@ def word_diagram(word, show_idn=False, user_idn=None):
         jbo_dict=jbo_dict,
         user_idn=user_idn,
     )
+
 
 def render_num(num):
     if num.is_suffixed():
