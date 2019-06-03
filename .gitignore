@@ -11,3 +11,6 @@ db.sqlite3
 .idea/
 .cache/
 *.py[oc]
+
+# Somebody put virtual environments in here
+venv
