@@ -13,4 +13,5 @@ db.sqlite3
 *.py[oc]
 
 # Somebody put virtual environments in here
-venv
+venv/
+venv38/
